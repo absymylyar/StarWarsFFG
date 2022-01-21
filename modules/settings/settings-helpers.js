@@ -202,7 +202,6 @@ export default class SettingsHelpers {
       type: UISettings,
       restricted: true,
     });
-
     game.settings.register("starwarsffg", "uiSettings", {
       name: "UI Settings",
       scope: "world",
@@ -213,7 +212,6 @@ export default class SettingsHelpers {
 
     // Register settings for UI Themes
     game.settings.register("starwarsffg", "ui-uitheme", {
-      module: "starwarsffg",
       name: game.i18n.localize("SWFFG.SettingsUITheme"),
       hint: game.i18n.localize("SWFFG.SettingsUIThemeHint"),
       scope: "world",
@@ -228,7 +226,6 @@ export default class SettingsHelpers {
     });
 
     game.settings.register("starwarsffg", "ui-pausedImage", {
-      module: "starwarsffg",
       name: game.i18n.localize("SWFFG.SettingsPausedImage"),
       hint: game.i18n.localize("SWFFG.SettingsPausedImageHint"),
       scope: "world",

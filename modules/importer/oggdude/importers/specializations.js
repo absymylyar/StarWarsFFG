@@ -56,7 +56,7 @@ export default class Specializations {
                   rowTalent.size = "single";
                   rowTalent.canLinkTop = true;
                   rowTalent.canLinkRight = true;
-                  rowTalent.itemId = talentItem._id;
+                  rowTalent.itemId = talentItem.id;
                   rowTalent.attributes = talentItem.data.attributes;
 
                   if (row.Directions.Direction[index].Up && row.Directions.Direction[index].Up === "true") {
@@ -79,7 +79,7 @@ export default class Specializations {
               });
             }
 
-            let imgPath = await ImportHelpers.getImageFilename(zip, "Specialization", "", data.flags.starwarsffg.ffgimportid);
+            let imgPath = await ImportHelpers.getImageFilename(zip, "Specialization", "", data.flags.ffgimportid);
             if (imgPath) {
               data.img = await ImportHelpers.importImage(imgPath.name, zip, pack);
             }

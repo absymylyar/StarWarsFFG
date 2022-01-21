@@ -10,6 +10,7 @@ import ModifierHelpers from "../helpers/modifiers.js";
 import ActorHelpers from "../helpers/actor-helpers.js";
 import ItemHelpers from "../helpers/item-helpers.js";
 import EmbeddedItemHelpers from "../helpers/embeddeditem-helpers.js";
+import { configureCharacterSkillApiDialog, configureCharacterTalentApiDialog } from "../api-calls/graphql-queries.js";
 
 export class ActorSheetFFG extends ActorSheet {
   constructor(...args) {
@@ -56,7 +57,6 @@ export class ActorSheetFFG extends ActorSheet {
     data.data = actorData.data;
     data.rollData = this.actor.getRollData.bind(this.actor);
 
-    data.token = this.token?.data;
     data.items = this.actor.items.map((item) => item.data);
 
     if (options?.action === "update" && this.object.compendium) {
@@ -74,12 +74,12 @@ export class ActorSheetFFG extends ActorSheet {
     if (typeof this.actor.data?.flags?.config?.enableAutoSoakCalculation === "undefined") {
       autoSoakCalculation = game.settings.get("starwarsffg", "enableSoakCalc");
     } else {
-      autoSoakCalculation = this.actor.data?.flags?.starwarsffg?.config?.enableAutoSoakCalculation;
+      autoSoakCalculation = this.actor.data.flags.config.enableAutoSoakCalculation;
     }
 
     data.settings = {
       enableSoakCalculation: autoSoakCalculation,
-      enableCriticalInjuries: this.actor.data?.flags?.starwarsffg?.config?.enableCriticalInjuries,
+      enableCriticalInjuries: this.actor.data?.flags?.config?.enableCriticalInjuries,
     };
 
     // Establish sheet width and height using either saved persistent values or default values defined in swffg-config.js
@@ -92,7 +92,7 @@ export class ActorSheetFFG extends ActorSheet {
           this.position.height = 165;
         }
         // we need to update all specialization talents with the latest talent information
-        if (!this.actor.data.flags.starwarsffg?.loaded) {
+        if (!this.actor.data.flags.loaded) {
           this._updateSpecialization(data);
         }
 
@@ -104,11 +104,6 @@ export class ActorSheetFFG extends ActorSheet {
     }
 
     if (this.actor.data.type !== "vehicle") {
-      // Filter out skills that are not custom (manually added) or part of the current system skill list
-      Object.keys(data.data.skills)
-      .filter(s => !data.data.skills[s].custom && !CONFIG.FFG.skills[s])
-      .forEach(s => delete data.data.skills[s]);
-
       data.data.skilllist = this._createSkillColumns(data);
     }
 
@@ -147,12 +142,19 @@ export class ActorSheetFFG extends ActorSheet {
       $(event.currentTarget).find(".popout-editor-button").hide();
     });
     html.find(".popout-editor .popout-editor-button").on("click", this._onPopoutEditor.bind(this));
+    
 
     // Setup dice pool image and hide filtered skills
     html.find(".skill").each((_, elem) => {
       DiceHelpers.addSkillDicePool(this, elem);
+      configureCharacterSkillApiDialog(elem)
       const filters = this._filters.skills;
     });
+    html.find(".specialization-talent-item").each((_, elem) => {      
+      configureCharacterTalentApiDialog(elem)
+    });
+    
+
 
     // Everything below here is only needed if the sheet is editable
     if (!this.isEditable) return;
@@ -192,6 +194,7 @@ export class ActorSheetFFG extends ActorSheet {
 
         // Prevent adding of character data type items to vehicles
         if (["career", "forcepower", "talent", "signatureability", "specialization", "species"].includes(item.type.toString()) && actor.type === "vehicle") {
+          console.log(item.type, actor.type);
           ui.notifications.warn(`Item type '${item.type}' cannot be added to 'vehicle' actor types.`);
           return false;
         }
@@ -355,22 +358,6 @@ export class ActorSheetFFG extends ActorSheet {
         type: "Array",
         default: 0,
         options: [game.i18n.localize("SWFFG.UseGlobalSetting"), game.i18n.localize("SWFFG.OptionValueYes"), game.i18n.localize("SWFFG.OptionValueNo")],
-      });
-    }
-
-    if (this.actor.data.type === "vehicle") {
-      this.sheetoptions = new ActorOptions(this, html);
-      this.sheetoptions.register("enableHyperdrive", {
-        name: game.i18n.localize("SWFFG.EnableHyperdrive"),
-        hint: game.i18n.localize("SWFFG.EnableHyperdriveHint"),
-        type: "Boolean",
-        default: true,
-      });
-      this.sheetoptions.register("enableSensors", {
-        name: game.i18n.localize("SWFFG.EnableSensors"),
-        hint: game.i18n.localize("SWFFG.EnableSensorsHint"),
-        type: "Boolean",
-        default: true,
       });
     }
 
@@ -556,7 +543,6 @@ export class ActorSheetFFG extends ActorSheet {
       let count = item.data.data.quantity.value - 1 > 0 ? item.data.data.quantity.value - 1 : 0;
       item.update({ ["data.quantity.value"]: count });
     });
-
     // Roll Skill
     html
       .find(".roll-button")
@@ -1038,10 +1024,7 @@ export class ActorSheetFFG extends ActorSheet {
    */
   async _updateSpecialization(data) {
     CONFIG.logger.debug(`Running Actor initial load`);
-    if (this.actor.data.flags.starwarsffg === undefined) {
-        this.actor.data.flags.starwarsffg = {};
-    }
-    this.actor.data.flags.starwarsffg.loaded = true;
+    this.actor.data.flags.loaded = true;
 
     const specializations = this.actor.data.items.filter((item) => {
       return item.type === "specialization";
@@ -1059,7 +1042,7 @@ export class ActorSheetFFG extends ActorSheet {
             if (!entry) {
               entry = await pack.index.find((e) => e.name === specializationTalents[talent].name);
             }
-            gameItem = await pack.getDocument(entry.id);
+            gameItem = await pack.getEntity(entry.id);
           }
         } else {
           gameItem = await game.items.get(specializationTalents[talent].itemId);
@@ -1093,8 +1076,33 @@ export class ActorSheetFFG extends ActorSheet {
           }
         });
       }
+      if(!globalTalentList.length && data.actor.data.talentList.length>0){
+        data.actor.data.talentList.forEach((talent) => {
+          const item = talent;
+          item.firstSpecialization = spec.id;
 
-      data.actor.data.talentList = mergeObject(data.actor.data.talentList, globalTalentList);
+          if (item.isRanked) {
+            item.rank = typeof talent.rank === "number" ? talent.rank : 1;
+          } else {
+            item.rank = "N/A";
+          }
+
+          let index = globalTalentList.findIndex((obj) => {
+            return obj.talentKey === item.talentKey;
+          });
+
+          if (index < 0 || !item.isRanked) {
+            globalTalentList.push(item);
+          } else {
+            globalTalentList[index].rank += talent.rank;
+          }
+        });
+        data.actor.data.talentList = globalTalentList;
+      } else {
+        data.actor.data.talentList = mergeObject(data.actor.data.talentList, globalTalentList);
+      }
+      console.log("globalTalentList", globalTalentList);
+      console.log("data.actor.data.talentList", data.actor.data.talentList);
     });
   }
 

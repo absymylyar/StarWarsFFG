@@ -38,7 +38,7 @@ export default class RollBuilderFFG extends FormApplication {
       game.playlists.contents.forEach((playlist) => {
         playlist.sounds.forEach((sound) => {
           let selected = false;
-          const s = this.roll?.sound ?? this.roll?.item?.flags?.starwarsffg?.ffgsound;
+          const s = this.roll?.sound ?? this.roll?.item?.flags?.ffgsound;
           if (s === sound.path) {
             selected = true;
           }
@@ -52,7 +52,7 @@ export default class RollBuilderFFG extends FormApplication {
       if (playlist) {
         playlist.sounds.forEach((sound) => {
           let selected = false;
-          const s = this.roll?.sound ?? this.roll?.item?.flags?.starwarsffg?.ffgsound;
+          const s = this.roll?.sound ?? this.roll?.item?.flags?.ffgsound;
           if (s === sound.path) {
             selected = true;
           }
@@ -106,13 +106,13 @@ export default class RollBuilderFFG extends FormApplication {
           if (this?.roll?.item) {
             let entity;
             let entityData;
-            if (!this?.roll?.item?.flags?.starwarsffg?.uuid) {
+            if (!this?.roll?.item?.flags?.uuid) {
               entity = CONFIG["Actor"].documentClass.collection.get(this.roll.data.actor.id);
               entityData = {
                 _id: this.roll.item.id,
               };
             } else {
-              const parts = this.roll.item.flags.starwarsffg?.uuid.split(".");
+              const parts = this.roll.item.flags.uuid.split(".");
               const [entityName, entityId, embeddedName, embeddedId] = parts;
               entity = CONFIG[entityName].documentClass.collection.get(entityId);
               if (parts.length === 4) {
@@ -121,7 +121,7 @@ export default class RollBuilderFFG extends FormApplication {
                 };
               }
             }
-            setProperty(entityData, "flags.starwarsffg.ffgsound", sound);
+            setProperty(entityData, "flags.ffgsound", sound);
             entity.updateOwnedItem(entityData);
           }
         }
@@ -149,7 +149,7 @@ export default class RollBuilderFFG extends FormApplication {
           user: game.user.id,
           content: messageText,
           flags: {
-            starwarsffg: {
+            ffg: {
               roll: this.roll,
               dicePool: this.dicePool,
               description: this.description,
@@ -166,11 +166,7 @@ export default class RollBuilderFFG extends FormApplication {
         const roll = new game.ffg.RollFFG(this.dicePool.renderDiceExpression(), this.roll.item, this.dicePool, this.roll.flavor);
         roll.toMessage({
           user: game.user.id,
-          speaker: {
-            actor: game.actors.get(this.roll.data?.actor?._id),
-            alias: this.roll.data?.token?.name,
-            token: this.roll.data?.token?._id,
-          },
+          speaker: { actor: game.actors.get(this.roll.data?.actor?._id) },
           flavor: `${game.i18n.localize("SWFFG.Rolling")} ${game.i18n.localize(this.roll.skillName)}...`,
         });
         if (this.roll?.sound) {

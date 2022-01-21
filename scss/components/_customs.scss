@@ -1,0 +1,40 @@
+.open-description-icons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  > :not(:first-child) {
+    margin-left: 8px;
+  }
+  .visibility-hidden {
+    display: none;
+  }
+}
+.skill-name {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 8px;
+  > :not(:first-child) {
+    margin-left: 4px;
+  }
+  &:hover,
+  &:focus {
+    .open-description-icons {
+      opacity: 1;
+    }
+  }
+  .open-description-icons {
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+  }
+}
+.item-controls{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  >:not(:first-child){
+    margin-left: 8px;
+  }
+}

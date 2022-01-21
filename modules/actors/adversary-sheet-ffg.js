@@ -35,7 +35,7 @@ export class AdversarySheetFFG extends ActorSheetFFG {
         }
 
         // we need to update all specialization talents with the latest talent information
-        if (!this.actor.data.flags.starwarsffg?.loaded) {
+        if (!this.actor.data.flags.loaded) {
           super._updateSpecialization(data);
         }
 

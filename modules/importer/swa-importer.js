@@ -372,13 +372,11 @@ export default class SWAImporter extends FormApplication {
                   name: item.name,
                   type: item.type === "Nemesis" ? "character" : "minion",
                   flags: {
-                    starwarsffg: {
-                      ffgimportid: `${f.name}-${item.type}-${item.name}`,
-                      config: {
-                        enableAutoSoakCalculation: false,
-                        enableCriticalInjuries: item.type !== "Minion",
-                      }
-                    }
+                    ffgimportid: `${f.name}-${item.type}-${item.name}`,
+                    config: {
+                      enableAutoSoakCalculation: false,
+                      enableCriticalInjuries: item.type === "Minion" ? false : true,
+                    },
                   },
                   data: {
                     attributes: {},
@@ -390,11 +388,7 @@ export default class SWAImporter extends FormApplication {
                 };
 
                 Object.values(CONFIG.FFG.characteristics).forEach((char) => {
-                  adversary.data.characteristics[char.value] = {
-                    value: item?.characteristics?.[char.value] ? item?.characteristics?.[char.value] : 0,
-                    label: game.i18n.localize(char.label),
-                    abrev: game.i18n.localize(char.abrev),
-                  };
+                  adversary.data.characteristics[char.value] = { value: item?.characteristics?.[char.value] ? item?.characteristics?.[char.value] : 0 };
                 });
 
                 if (item.derived) {
@@ -442,15 +436,7 @@ export default class SWAImporter extends FormApplication {
 
                     if (ffgSkill) {
                       adversary.data.skills[ffgSkill].groupskill = isMinion ? true : false;
-                      if (!isMinion) {
-                        adversary.data.attributes[skill] = {
-                          key: skill,
-                          mod: skill,
-                          modType: 'Skill Rank',
-                          value: item.skills[skill],
-                        };
-                        adversary.data.skills[ffgSkill].rank = item.skills[skill];
-                      }
+                      if (!isMinion) adversary.data.skills[ffgSkill].rank = item.skills[skill];
                       if (CONFIG.temporary.swa.skills?.[skill]?.characteristic) {
                         if (alternateCharacteristic) {
                           adversary.data.skills[ffgSkill].characteristic = alternateCharacteristic;
@@ -788,10 +774,9 @@ export default class SWAImporter extends FormApplication {
                   CONFIG.logger.debug(`Update Adversary - Actor`);
                   //let updateData = ImportHelpers.buildUpdateData(item);
                   let updateData = adversary;
-                  updateData["_id"] = entry._id;
+                  updateData["_id"] = entry.id;
                   this._importLogger(`Updating talent ${name} : ${JSON.stringify(updateData)}`);
-                  let to_update = await pack.getDocument(updateData._id)
-                  to_update.update(updateData);
+                  await pack.get(updateData._id)?.update(updateData);
                 }
               } catch (err) {
                 CONFIG.logger.error(`Error importing ${item.name} from ${f.name}`, err);
@@ -850,7 +835,7 @@ export default class SWAImporter extends FormApplication {
     });
     if (!pack) {
       this._importLogger(`Compendium pack ${name} not found, creating new`);
-      pack = await CompendiumCollection.createCompendium({ type: type, label: name });
+      pack = await CompendiumCollection.createCompendium({ entity: type, label: name });
     } else {
       this._importLogger(`Existing compendium pack ${name} found`);
     }

@@ -18,16 +18,29 @@ export class ActorFFG extends Actor {
     // Make separate methods for each Actor type (character, minion, etc.) to keep
     // things organized.
 
-    // if the actor has skills, add custom skills
+    // if the actor has skills, add custom skills and sort by abbreviation
     if (data.skills) {
+      let actorSkills = data.skills;
+
+      Object.keys(data.skills)
+        .filter((skill) => {
+          return data.skills[skill].custom;
+        })
+        .forEach((skill) => {
+          actorSkills[skill] = {
+            value: skill,
+            abrev: data.skills[skill].label,
+            label: data.skills[skill].label,
+            custom: data.skills[skill].custom,
+            ...data.skills[skill],
+          };
+        });
+
       let skills = JSON.parse(JSON.stringify(CONFIG.FFG.skills));
 
-      data.skills = mergeObject(skills, data.skills);
-
-      // Filter out skills that are not custom (manually added) or part of the current system skill list
-      Object.keys(data.skills)
-      .filter(s => !data.skills[s].custom && !CONFIG.FFG.skills[s])
-      .forEach(s => delete data.skills[s]);
+      // if (game.settings.get("starwarsffg", "skilltheme") !== "starwars") {
+      data.skills = mergeObject(skills, actorSkills);
+      // }
 
       let unique = [...new Set(Object.values(data.skills).map((item) => item.type))];
       if (unique.indexOf("General") > 0) {
@@ -325,18 +338,12 @@ export class ActorFFG extends Actor {
           if (item.type === "armour" && item?.data?.equippable?.equipped) {
             const equippedEncumbrance = +item.data.encumbrance.adjusted - 3;
             encum += equippedEncumbrance > 0 ? equippedEncumbrance : 0;
-          } else if (item.type === "armour" || item.type === "weapon" || item.type === "shipweapon") {
-            let count = 0;
-            if (item.data?.quantity?.value) {
-              count = item.data.quantity.value;
-            }
-            encum += ((item.data?.encumbrance?.adjusted !== undefined) ? item.data?.encumbrance?.adjusted : item.data?.encumbrance?.value) * count;
           } else {
-            let count = 0;
+            let count = 1;
             if (item.data?.quantity?.value) {
               count = item.data.quantity.value;
             }
-            encum += item.data?.encumbrance?.value * count;
+            encum += (item.data?.encumbrance?.adjusted !== undefined ? item.data?.encumbrance?.adjusted : item.data?.encumbrance?.value) * count;
           }
         }
       } catch (err) {

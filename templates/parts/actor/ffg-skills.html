@@ -16,12 +16,15 @@
       </div>
       {{else}}
       <div class="skillTable" data-type="{{skill.type}}">
-        <div data-ability="{{skill.name}}" data-skilltype="{{skill.type}}" data-characteristic="{{skill.characteristic}}" class="pure-g skill" draggable="true">
+        <div data-key="{{skill.Key}}" data-ability="{{skill.name}}" data-skilltype="{{skill.type}}" data-characteristic="{{skill.characteristic}}" class="pure-g skill" draggable="true">
           <div class="pure-u-12-24">
             <div class="skill-name">
-              {{#if skill.useForInitiative}}*{{/if}}{{skill.label}} {{#with (lookup ../../this.FFG.characteristics [characteristic])~}}
-              <div class="skill-characteristic" data-characteristic="{{skill.characteristic}}">({{localize abrev}})</div>
-              {{/with}}
+              <div>
+                {{#if skill.useForInitiative}}*{{/if}}{{skill.label}} {{#with (lookup ../../this.FFG.characteristics [characteristic])~}}
+                <div class="skill-characteristic" data-characteristic="{{skill.characteristic}}">({{localize abrev}})</div>
+                {{/with}}
+              </div>
+              <div class="open-description-icons"><a class="api-dialog"><i class="fas fa-eye"></i></a><i class="fas fa-spinner fa-spin visibility-hidden"></i></div>
             </div>
           </div>
           {{#if (eq ../../actor.type "minion")}}

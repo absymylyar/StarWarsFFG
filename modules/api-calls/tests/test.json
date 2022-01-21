@@ -1,0 +1,15 @@
+{
+  "data": {
+    "talents": [
+      {
+        "name": "Flexible",
+        "description": "\u003Cp style=\u0022text-align: justify;\u0022\u003E\u003Cem\u003ETalent de la Force\u003C/em\u003E. Lorsqu\u0026rsquo;il r\u0026eacute;sout un test en utilisant une comp\u0026eacute;tence dans laquelle il n\u0026rsquo;a pas de rang, le personnage peut d\u0026eacute;penser 1 point de Destin pour retirer \u003Cspan style=\u0022font-family: \u0027EotE Symbol\u0027;\u0022\u003Ey\u003C/span\u003E au test ou un nombre de \u003Cspan style=\u0022font-family: \u0027EotE Symbol\u0027;\u0022\u003Et\u003C/span\u003E \u0026eacute;gal \u0026agrave; son rang en Calme\u003C/p\u003E",
+        "id": "VGFsZW50Cmk1NDg=",
+        "language": "fr",
+        "force": true,
+        "conflict": false,
+        "ranked": false
+      }
+    ]
+  }
+}

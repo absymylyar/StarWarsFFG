@@ -31,6 +31,115 @@
   font-family: "GenesysSymbol";
   src: url("../fonts/Genesys.ttf") format("truetype");
 }
+@font-face {
+  font-family: "EotE Symbol";
+  src: url("../fonts/fontname/EotE-Symbol.eot?dfhk8o");
+  src: url("../fonts/fontname/EotE-Symbol.eot?dfhk8o#iefix") format("embedded-opentype"), url("../fonts/fontname/EotE-Symbol.ttf?dfhk8o") format("truetype"), url("../fonts/fontname/EotE-Symbol.woff?dfhk8o") format("woff"), url("../fonts/fontname/EotE-Symbol.svg?dfhk8o#EotE Symbol") format("svg");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Aurebesh";
+  src: url("../fonts/aurebesh/Aurebesh.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "StarJedi";
+  src: url("../fonts/star-wars/starjedi/Starjedi.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+[class^=swf-],
+[class*=" swf-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: "EotE Symbol" !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.swf-ranked:before {
+  content: "r";
+}
+
+.swf-conflict:before {
+  content: "S";
+}
+
+.swf-notdef:before {
+  content: "\e901";
+}
+
+.swf-blank-dice:before {
+  content: "B";
+}
+
+.swf-force-dice:before {
+  content: "C";
+}
+
+.swf-blank-difficulty:before {
+  content: "D";
+}
+
+.swf-force-point:before {
+  content: "Y";
+}
+
+.swf-force-light-side:before {
+  content: "Z";
+}
+
+.swf-advantage:before {
+  content: "a";
+}
+
+.swf-dice:before {
+  content: "b";
+}
+
+.swf-challenge:before {
+  content: "c";
+}
+
+.swf-difficulty:before {
+  content: "d";
+}
+
+.swf-fail:before {
+  content: "f";
+}
+
+.swf-success:before {
+  content: "s";
+}
+
+.swf-threat:before {
+  content: "t";
+}
+
+.swf-hope:before {
+  content: "x";
+}
+
+.swf-despair:before {
+  content: "y";
+}
+
+.swf-force-dark-side:before {
+  content: "z";
+}
+
 /* Global styles */
 div,
 section {
@@ -502,6 +611,7 @@ img {
   width: 100%;
   height: auto;
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   font-size: 11pt;
 }
@@ -512,7 +622,7 @@ img {
   border: 0;
   margin-bottom: 5px;
   padding: 0 5px 5px 5px;
-  align-items: flex-start;
+  align-items: center;
 }
 .starwarsffg.sheet.item .popout-editor {
   height: 50px;
@@ -2847,4 +2957,40 @@ img {
 .destiny-flip.dPoolLight {
   background-color: #b8383b;
   color: white;
+}
+
+.open-description-icons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.open-description-icons > :not(:first-child) {
+  margin-left: 8px;
+}
+.open-description-icons .visibility-hidden {
+  display: none;
+}
+
+.skill-name {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 8px;
+}
+.skill-name > :not(:first-child) {
+  margin-left: 4px;
+}
+.skill-name:hover .open-description-icons, .skill-name:focus .open-description-icons {
+  opacity: 1;
+}
+.skill-name .open-description-icons {
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+.item-controls{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
 }

@@ -529,7 +529,7 @@ img {
 .starwarsffg .container.flex-group-center {
   border: 0;
   padding: 0;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .starwarsffg.sheet.item .tab[data-tab].active {
@@ -1931,6 +1931,9 @@ img {
   position: relative;
   font-size: 0.75rem;
   padding-right: 1.5rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .starwarsffg .skill-characteristic {

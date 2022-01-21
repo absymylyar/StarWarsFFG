@@ -39,12 +39,12 @@ export default class ItemHelpers {
     }
 
     // Update the Item
-    setProperty(formData, `flags.starwarsffg.loaded`, false)
+    this.item.data.flags.loaded = false;
     await this.object.update(formData);
 
     if (this.object.data.type === "talent") {
       if (this.object.data.flags?.clickfromparent?.length) {
-        let listofparents = JSON.parse(JSON.stringify(this.object.data.flags.starwarsffg.clickfromparent));
+        let listofparents = JSON.parse(JSON.stringify(this.object.data.flags.clickfromparent));
         while (listofparents.length > 0) {
           const parent = listofparents.shift();
           const spec = await fromUuid(parent.id);
@@ -70,11 +70,11 @@ export default class ItemHelpers {
               const ids = parent.id.split(".OwnedItem.");
               const actor = await fromUuid(ids[0]);
               const item = await actor.items.get(ids[1]);
-              setProperty(updateData, `flags.starwarsffg.loaded`, false);
+              spec.flags.loaded = false;
               await item.update(updateData);
               await item.sheet.render(true);
             } else {
-              setProperty(updateData, `flags.starwarsffg.loaded`, false);
+              spec.data.flags.loaded = false;
               await spec.update(updateData);
               await spec.sheet.render(true);
             }

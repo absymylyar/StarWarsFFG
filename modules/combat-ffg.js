@@ -55,10 +55,7 @@ export class CombatFFG extends Combat {
       } else {
         // Make sure we are dealing with an array of ids
         ids = typeof ids === "string" ? [ids] : ids;
-        const c = initiative.getCombatantByToken(
-            initiative.data.combatants.map(combatant => combatant.data)
-            .filter(combatantData => combatantData._id == ids[0])[0]
-            .tokenId);
+        const c = initiative.getCombatant(ids[0]);
         const data = c.actor.data.data;
         whosInitiative = c.actor.name;
 
@@ -115,10 +112,7 @@ export class CombatFFG extends Combat {
                   let [updates, messages] = results;
 
                   // Get Combatant data
-                  const c = initiative.getCombatantByToken(
-                    initiative.data.combatants.map(combatant => combatant.data)
-                    .filter(combatantData => combatantData._id == id)[0]
-                    .tokenId);;
+                  const c = initiative.getCombatant(id);
                   if (!c || !c.isOwner) return resolve(results);
 
                   // Detemine Formula
@@ -173,7 +167,7 @@ export class CombatFFG extends Combat {
               if (!updates.length) return initiative;
 
               // Update multiple combatants
-              await initiative.updateEmbeddedDocuments("Combatant", updates);
+              await initiative.updateEmbeddedEntity("Combatant", updates);
 
               // Ensure the turn order remains with the same combatant
               if (updateTurn) {

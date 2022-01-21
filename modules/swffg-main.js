@@ -35,7 +35,6 @@ import { createFFGMacro } from "./helpers/macros.js";
 import EmbeddedItemHelpers from "./helpers/embeddeditem-helpers.js";
 import DataImporter from "./importer/data-importer.js";
 import PauseFFG from "./apps/pause-ffg.js";
-import FlagMigrationHelpers from "./helpers/flag-migration-helpers.js";
 
 /* -------------------------------------------- */
 /*  Foundry VTT Initialization                  */
@@ -74,7 +73,7 @@ Hooks.once("init", async function () {
   CONFIG.Dice.terms["a"] = AbilityDie;
   CONFIG.Dice.terms["b"] = BoostDie;
   CONFIG.Dice.terms["c"] = ChallengeDie;
-  CONFIG.Dice.terms["i"] = DifficultyDie;
+  CONFIG.Dice.terms["d"] = DifficultyDie;
   CONFIG.Dice.terms["f"] = ForceDie;
   CONFIG.Dice.terms["p"] = ProficiencyDie;
   CONFIG.Dice.terms["s"] = SetbackDie;
@@ -234,8 +233,8 @@ Hooks.once("init", async function () {
         });
 
         const sorted = Object.keys(skills).sort(function (a, b) {
-          const x = game.i18n.localize(skills[a].label);
-          const y = game.i18n.localize(skills[b].label);
+          const x = game.i18n.localize(skills[a].abrev);
+          const y = game.i18n.localize(skills[b].abrev);
 
           return x < y ? -1 : x > y ? 1 : 0;
         });
@@ -250,27 +249,43 @@ Hooks.once("init", async function () {
     } catch (err) {}
 
     Hooks.on("createActor", (actor) => {
-      if (actor.type !== "vehicle") {
-        if (CONFIG.FFG?.alternateskilllists?.length) {
-          let skilllist = game.settings.get("starwarsffg", "skilltheme");
-          try {
-            let skills = JSON.parse(JSON.stringify(CONFIG.FFG.alternateskilllists.find((list) => list.id === skilllist)));
-            CONFIG.logger.log(`Applying skill theme ${skilllist} to actor`);
+      let skilllist = game.settings.get("starwarsffg", "skilltheme");
 
-            actor.update({
-              data: {
-                skills: skills.skills,
-              },
+      if (CONFIG.FFG?.alternateskilllists?.length) {
+        try {
+          let skills = JSON.parse(JSON.stringify(CONFIG.FFG.alternateskilllists.find((list) => list.id === skilllist)));
+          CONFIG.logger.log(`Applying skill theme ${skilllist} to actor`);
+
+          if (actor.type !== "vehicle") {
+            Object.keys(actor.data.data.skills).forEach((skill) => {
+              if (!skills.skills[skill] && !skills?.skills[skill]?.nontheme) {
+                skills.skills[`-=${skill}`] = null;
+              } else {
+                skills.skills[skill] = {
+                  ...actor.data.data.skills[skill],
+                  ...skills.skills[skill],
+                };
+
+                skills.skills[skill].rank = actor.data.data.skills[skill].rank;
+                skills.skills[skill].careerskill = actor.data.data.skills[skill].careerskill;
+                skills.skills[skill].groupskill = actor.data.data.skills[skill].groupskill;
+              }
             });
-          } catch (err) {
-            CONFIG.logger.warn(err);
           }
+
+          actor.update({
+            data: {
+              skills: skills.skills,
+            },
+          });
+        } catch (err) {
+          CONFIG.logger.warn(err);
         }
       }
     });
   }
 
-  await gameSkillsList();
+  gameSkillsList();
 
   FFG.configureDice();
   FFG.configureVehicleRange();
@@ -456,7 +471,7 @@ Hooks.on("renderChatMessage", (app, html, messageData) => {
   content[0].innerHTML = PopoutEditor.renderDiceImages(content[0].innerHTML);
 
   html.on("click", ".ffg-pool-to-player", () => {
-    const poolData = messageData.message.flags.starwarsffg;
+    const poolData = messageData.message.flags.ffg;
 
     const dicePool = new DicePoolFFG(poolData.dicePool);
 
@@ -489,7 +504,8 @@ Hooks.once("ready", async () => {
 
   const currentVersion = game.settings.get("starwarsffg", "systemMigrationVersion");
 
-  const version = game.system.data.version;
+  const pattern = /([1-9].[1-9])/gim;
+  const version = game.system.data.version.match(pattern);
   const isAlpha = game.system.data.version.includes("alpha");
 
   if ((isAlpha || currentVersion === "null" || parseFloat(currentVersion) < parseFloat(game.system.data.version)) && game.user.isGM) {
@@ -593,24 +609,51 @@ Hooks.once("ready", async () => {
       }
     }
 
-    if (currentVersion === "null" || parseFloat(currentVersion) < 1.61) {
+    if (currentVersion === "null" || parseFloat(currentVersion) < 1.3) {
       ui.notifications.info(`Migrating Starwars FFG System for version ${game.system.data.version}. Please be patient and do not close your game or shut down your server.`, { permanent: true });
 
-      try {
-        
-        // Update old pack to latest data model
-        for (let pack of game.packs) {
-          await pack.migrate();
-        }
-        
-        // Copy old flags to new system scope
-        FlagMigrationHelpers.migrateFlags()
+      const pro = [];
 
-        ui.notifications.info(`Starwars FFG System Migration to version ${game.system.data.version} completed!`, { permanent: true });
-      } catch (err) {
-        CONFIG.logger.error(`Error during system migration`, err);
-      }
+      game.packs.entries.forEach((pack) => {
+        pro.push(
+          new Promise(async (resolve, reject) => {
+            const content = await pack.getDocuments();
+            CONFIG.logger.log(`Migrating ${pack.metadata.label} - ${content.length} Entries`);
+
+            const isLocked = pack.locked;
+
+            if (isLocked) {
+              await pack.configure({ locked: false });
+            }
+
+            for (var i = 0; i < content.length; i++) {
+              if (!content[i]?.data?.flags?.ffgimportid && content[i]?.data?.flags?.importid) {
+                CONFIG.logger.debug(`Migrating (${content[i].data._id}) ${content[i].data.name}`);
+                content[i].update({
+                  flags: {
+                    ffgimportid: content[i].data.flags.importid,
+                  },
+                });
+              }
+            }
+            resolve();
+
+            if (isLocked) {
+              await pack.configure({ locked: true });
+            }
+          })
+        );
+      });
+
+      Promise.all(pro)
+        .then(() => {
+          ui.notifications.info(`Starwars FFG System Migration to version ${game.system.data.version} completed!`, { permanent: true });
+        })
+        .catch((err) => {
+          CONFIG.logger.error(`Error during system migration`, err);
+        });
     }
+
     game.settings.set("starwarsffg", "systemMigrationVersion", version);
   }
 
@@ -779,7 +822,7 @@ Hooks.once("diceSoNiceReady", (dice3d) => {
 
     dice3d.addDicePreset(
       {
-        type: "di",
+        type: "dd",
         labels: ["", "f", "f\nf", "h", "h", "h", "h\nh", "f\nh"],
         font: "Genesys",
         colorset: "purple",

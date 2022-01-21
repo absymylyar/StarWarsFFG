@@ -142,10 +142,6 @@ export const itemmodifier_rollmodifiers = {
     "value": "Add Setback",
     "label": "SWFFG.ModTypeAddSetback",
   },
-  "Remove Setback": {
-    "value": "Remove Setback",
-    "label": "SWFFG.ModTypeRemSetback",
-  },
 };
 
 export const itemmodifier_dicemodifiers = {
