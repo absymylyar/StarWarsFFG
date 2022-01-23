@@ -1,0 +1,75 @@
+/*
+ * Application global variables.
+ */
+
+// Angular Material custom theme
+// See https://material.angular.io/guide/theming for more details.
+//
+// You can also read https://medium.com/@tomastrajan/the-complete-guide-to-angular-material-themes-4d165a9d24d1
+// for more insight about Angular Material theming.
+
+$very-tiny-space: 2px;
+$tiny-space: 4px;
+$small-space: 8px;
+$medium-space: 16px;
+$large-space: 32px;
+$very-large-space: 64px;
+
+$border-radius-main: 5px;
+
+$shell-main-bg-blue: #1c6db5;
+$shell-title-bg-blue: #5395cf;
+$white-color: #fff;
+$color-blue-primary: #337ab7;
+
+$allow: #29aa5d;
+$confirm: #ff7d50;
+$forbidden: #ff3300;
+$impossible: #ff3300;
+
+$is-deleted: lightgray;
+
+$bonus-dice: #7bc2e8;
+$ability-dice: #73b81a;
+$proficiency-dice: yellow;
+
+$good-value-color: rgba(
+  $color: #00ff00,
+  $alpha: 0.3,
+);
+$bad-value-color: rgba(
+  $color: #ff0000,
+  $alpha: 0.3,
+);
+
+$row-background: lightgray;
+
+$white: #fff;
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #868e96;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+$black: #000;
+
+$blue: #0073dd;
+$indigo: #6610f2;
+$purple: #6f42c1;
+$pink: #e83e8c;
+$red: #dc3545;
+$orange: #fd7e14;
+$yellow: #ffc107;
+$green: #28a745;
+$teal: #20c997;
+$cyan: #17a2b8;
+
+$border-color: 1px solid $gray-600;
+$dotted-border-color: 1px dotted $gray-600;
+$thick-border-color: 4px solid $gray-600;
+
+$low-opacity: 0.6;
+$high-opacity: 0.8;

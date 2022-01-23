@@ -10,7 +10,13 @@ import ModifierHelpers from "../helpers/modifiers.js";
 import ActorHelpers from "../helpers/actor-helpers.js";
 import ItemHelpers from "../helpers/item-helpers.js";
 import EmbeddedItemHelpers from "../helpers/embeddeditem-helpers.js";
-import { configureCharacterSkillApiDialog, configureCharacterTalentApiDialog } from "../api-calls/graphql-queries.js";
+import {
+  configureCharacterForcePowerApiDialog,
+  configureCharacterSkillApiDialog,
+  configureCharacterTalentApiDialog,
+  configureCharacterUpGradePowerApiDialog,
+  configureEffectApiDialog,
+} from "../api-calls/graphql-queries.js";
 
 export class ActorSheetFFG extends ActorSheet {
   constructor(...args) {
@@ -33,7 +39,13 @@ export class ActorSheetFFG extends ActorSheet {
       template: "systems/starwarsffg/templates/actors/ffg-character-sheet.html",
       width: 710,
       height: 650,
-      tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "characteristics" }],
+      tabs: [
+        {
+          navSelector: ".sheet-tabs",
+          contentSelector: ".sheet-body",
+          initial: "characteristics",
+        },
+      ],
       scrollY: [".tableWithHeader", ".tab", ".skillsGrid"],
     });
   }
@@ -71,20 +83,27 @@ export class ActorSheetFFG extends ActorSheet {
 
     let autoSoakCalculation = true;
 
-    if (typeof this.actor.data?.flags?.config?.enableAutoSoakCalculation === "undefined") {
+    if (
+      typeof this.actor.data?.flags?.config?.enableAutoSoakCalculation ===
+      "undefined"
+    ) {
       autoSoakCalculation = game.settings.get("starwarsffg", "enableSoakCalc");
     } else {
-      autoSoakCalculation = this.actor.data.flags.config.enableAutoSoakCalculation;
+      autoSoakCalculation = this.actor.data.flags.config
+        .enableAutoSoakCalculation;
     }
 
     data.settings = {
       enableSoakCalculation: autoSoakCalculation,
-      enableCriticalInjuries: this.actor.data?.flags?.config?.enableCriticalInjuries,
+      enableCriticalInjuries: this.actor.data?.flags?.config
+        ?.enableCriticalInjuries,
     };
 
     // Establish sheet width and height using either saved persistent values or default values defined in swffg-config.js
-    this.position.width = this.sheetWidth || CONFIG.FFG.sheets.defaultWidth[this.actor.data.type];
-    this.position.height = this.sheetHeight || CONFIG.FFG.sheets.defaultHeight[this.actor.data.type];
+    this.position.width =
+      this.sheetWidth || CONFIG.FFG.sheets.defaultWidth[this.actor.data.type];
+    this.position.height =
+      this.sheetHeight || CONFIG.FFG.sheets.defaultHeight[this.actor.data.type];
 
     switch (this.actor.data.type) {
       case "character":
@@ -97,7 +116,9 @@ export class ActorSheetFFG extends ActorSheet {
         }
 
         if (data.data.stats.credits.value > 999) {
-          data.data.stats.credits.value = data.data.stats.credits.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          data.data.stats.credits.value = data.data.stats.credits.value
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
         break;
       default:
@@ -107,7 +128,12 @@ export class ActorSheetFFG extends ActorSheet {
       data.data.skilllist = this._createSkillColumns(data);
     }
 
-    if (this.actor.data?.flags?.config?.enableObligation === false && this.actor.data?.flags?.config?.enableDuty === false && this.actor.data?.flags?.config?.enableMorality === false && this.actor.data?.flags?.config?.enableConflict === false) {
+    if (
+      this.actor.data?.flags?.config?.enableObligation === false &&
+      this.actor.data?.flags?.config?.enableDuty === false &&
+      this.actor.data?.flags?.config?.enableMorality === false &&
+      this.actor.data?.flags?.config?.enableConflict === false
+    ) {
       data.hideObligationDutyMoralityConflictTab = true;
     }
 
@@ -141,20 +167,25 @@ export class ActorSheetFFG extends ActorSheet {
     html.find(".popout-editor").on("mouseout", (event) => {
       $(event.currentTarget).find(".popout-editor-button").hide();
     });
-    html.find(".popout-editor .popout-editor-button").on("click", this._onPopoutEditor.bind(this));
-    
+    html
+      .find(".popout-editor .popout-editor-button")
+      .on("click", this._onPopoutEditor.bind(this));
 
     // Setup dice pool image and hide filtered skills
     html.find(".skill").each((_, elem) => {
       DiceHelpers.addSkillDicePool(this, elem);
-      configureCharacterSkillApiDialog(elem)
+      configureCharacterSkillApiDialog(elem);
       const filters = this._filters.skills;
     });
-    html.find(".specialization-talent-item").each((_, elem) => {      
-      configureCharacterTalentApiDialog(elem)
+    html.find(".specialization-talent-item").each((_, elem) => {
+      configureCharacterTalentApiDialog(elem);
     });
-    
-
+    html.find(".forcepower").each((_, elem) => {
+      configureCharacterForcePowerApiDialog(elem);
+    });
+    html.find(".force-power").each((_, elem) => {
+      configureCharacterUpGradePowerApiDialog(elem);
+    });
 
     // Everything below here is only needed if the sheet is editable
     if (!this.isEditable) return;
@@ -165,37 +196,55 @@ export class ActorSheetFFG extends ActorSheet {
       this.sheetHeight = this.position.height;
 
       // Check that we are dealing with an Embedded Document
-      if (item.isEmbedded && item.parent.documentName === "Actor")
-      {
-        const actor = item.actor
+      if (item.isEmbedded && item.parent.documentName === "Actor") {
+        const actor = item.actor;
         // we only allow one species and one career, find any other species and remove them.
         if (item.type === "species" || item.type === "career") {
           if (actor.type === "character") {
-            const itemToDelete = actor.items.filter((i) => (i.type === item.type) && (i.id !== item.id));
+            const itemToDelete = actor.items.filter(
+              (i) => i.type === item.type && i.id !== item.id
+            );
             itemToDelete.forEach((i) => {
-                actor.items.get(i.id).delete();
+              actor.items.get(i.id).delete();
             });
-          }
-          else if (actor.type === "minion") {
-            ui.notifications.warn(`Item type '${item.type}' cannot be added to 'minion' actor types.`);
+          } else if (actor.type === "minion") {
+            ui.notifications.warn(
+              `Item type '${item.type}' cannot be added to 'minion' actor types.`
+            );
             return false;
           }
         }
 
         // Critical Damage can only be added to "vehicle" actors and Critical Injury can only be added to "character" actors.
         if (item.type === "criticaldamage" && actor.data.type !== "vehicle") {
-          ui.notifications.warn("Critical Damage can only be added to 'vehicle' actor types.");
+          ui.notifications.warn(
+            "Critical Damage can only be added to 'vehicle' actor types."
+          );
           return false;
         }
         if (item.type === "criticalinjury" && actor.data.type !== "character") {
-          ui.notifications.warn("Critical Injuries can only be added to 'character' actor types.");
+          ui.notifications.warn(
+            "Critical Injuries can only be added to 'character' actor types."
+          );
           return false;
         }
 
         // Prevent adding of character data type items to vehicles
-        if (["career", "forcepower", "talent", "signatureability", "specialization", "species"].includes(item.type.toString()) && actor.type === "vehicle") {
+        if (
+          [
+            "career",
+            "forcepower",
+            "talent",
+            "signatureability",
+            "specialization",
+            "species",
+          ].includes(item.type.toString()) &&
+          actor.type === "vehicle"
+        ) {
           console.log(item.type, actor.type);
-          ui.notifications.warn(`Item type '${item.type}' cannot be added to 'vehicle' actor types.`);
+          ui.notifications.warn(
+            `Item type '${item.type}' cannot be added to 'vehicle' actor types.`
+          );
           return false;
         }
       }
@@ -270,19 +319,30 @@ export class ActorSheetFFG extends ActorSheet {
         if (!item) {
           item = await ImportHelpers.findCompendiumEntityById("Item", itemId);
         }
-        const forcedice = this.actor.data.data.stats.forcePool.max - this.actor.data.data.stats.forcePool.value;
+        const forcedice =
+          this.actor.data.data.stats.forcePool.max -
+          this.actor.data.data.stats.forcePool.value;
         if (forcedice > 0) {
           let sheet = this.getData();
           const dicePool = new DicePoolFFG({
             force: forcedice,
           });
-          DiceHelpers.displayRollDialog(sheet, dicePool, `${game.i18n.localize("SWFFG.Rolling")} ${item.name}`, item.name, item);
+          DiceHelpers.displayRollDialog(
+            sheet,
+            dicePool,
+            `${game.i18n.localize("SWFFG.Rolling")} ${item.name}`,
+            item.name,
+            item
+          );
         }
       },
     };
 
     new ContextMenu(html, "li.item:not(.forcepower)", [sendToChatContextItem]);
-    new ContextMenu(html, "li.item.forcepower", [sendToChatContextItem, rollForceToChatContextItem]);
+    new ContextMenu(html, "li.item.forcepower", [
+      sendToChatContextItem,
+      rollForceToChatContextItem,
+    ]);
     new ContextMenu(html, "div.item", [sendToChatContextItem]);
 
     if (this.actor.data.type === "character") {
@@ -334,7 +394,11 @@ export class ActorSheetFFG extends ActorSheet {
         hint: game.i18n.localize("SWFFG.EnableSortTalentsByActivationHint"),
         type: "Array",
         default: 0,
-        options: [game.i18n.localize("SWFFG.UseGlobalSetting"), game.i18n.localize("SWFFG.OptionValueYes"), game.i18n.localize("SWFFG.OptionValueNo")],
+        options: [
+          game.i18n.localize("SWFFG.UseGlobalSetting"),
+          game.i18n.localize("SWFFG.OptionValueYes"),
+          game.i18n.localize("SWFFG.OptionValueNo"),
+        ],
       });
     }
 
@@ -357,26 +421,32 @@ export class ActorSheetFFG extends ActorSheet {
         hint: game.i18n.localize("SWFFG.EnableSortTalentsByActivationHint"),
         type: "Array",
         default: 0,
-        options: [game.i18n.localize("SWFFG.UseGlobalSetting"), game.i18n.localize("SWFFG.OptionValueYes"), game.i18n.localize("SWFFG.OptionValueNo")],
+        options: [
+          game.i18n.localize("SWFFG.UseGlobalSetting"),
+          game.i18n.localize("SWFFG.OptionValueYes"),
+          game.i18n.localize("SWFFG.OptionValueNo"),
+        ],
       });
     }
 
     html.find(".medical").click(async (ev) => {
       const item = await $(ev.currentTarget);
-      let prevUses = (this.object.data?.data?.stats?.medical?.uses === undefined) ? 0 : this.object.data.data.stats.medical.uses;
+      let prevUses =
+        this.object.data?.data?.stats?.medical?.uses === undefined
+          ? 0
+          : this.object.data.data.stats.medical.uses;
       let updateData = {};
       let newUses = 0;
       if (item[0].className === "fas fa-plus-circle medical") {
         newUses = prevUses + 1;
-        newUses = (newUses > 5) ? 5 : newUses;
+        newUses = newUses > 5 ? 5 : newUses;
       } else {
         newUses = prevUses - 1;
-        newUses = (newUses < 0) ? 0 : newUses;
+        newUses = newUses < 0 ? 0 : newUses;
       }
 
       setProperty(updateData, `data.stats.medical.uses`, newUses);
       this.object.update(updateData);
-
     });
 
     html.find(".resetMedical").click(async (ev) => {
@@ -390,46 +460,58 @@ export class ActorSheetFFG extends ActorSheet {
       const li = $(ev.currentTarget);
       const item = this.actor.items.get(li.data("itemId"));
       if (item) {
-        item.update({ ["data.equippable.equipped"]: !item.data.data.equippable.equipped });
-      }
-    });
-
-    // Toggle item details
-    html.find(".items .item, .header-description-block .item, .injuries .item").click(async (ev) => {
-      if (!$(ev.target).hasClass("fa-trash") && !$(ev.target).hasClass("fas") && !$(ev.target).hasClass("rollable")) {
-        const li = $(ev.currentTarget);
-        let itemId = li.data("itemId");
-        let item = this.actor.items.get(itemId);
-
-        if (!item) {
-          item = game.items.get(itemId);
-        }
-        if (!item) {
-          item = await ImportHelpers.findCompendiumEntityById("Item", itemId);
-        }
-        if (item?.sheet) {
-          if (item?.type == "species" || item?.type == "career" || item?.type == "specialization") item.sheet.render(true);
-          else this._itemDisplayDetails(item, ev);
-        }
-
-        html.find("li.item-pill").on("click", async (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          const li = event.currentTarget;
-
-          let itemId = li.dataset.itemId;
-          let modifierType = li.dataset.modifierType;
-          let modifierId = li.dataset.modifierId;
-
-          await EmbeddedItemHelpers.displayOwnedItemItemModifiersAsJournal(itemId, modifierType, modifierId, this.actor.id, this.actor.compendium);
+        item.update({
+          ["data.equippable.equipped"]: !item.data.data.equippable.equipped,
         });
       }
     });
 
+    // Toggle item details
+    html
+      .find(".items .item, .header-description-block .item, .injuries .item")
+      .click(async (ev) => {
+        if (
+          !$(ev.target).hasClass("fa-trash") &&
+          !$(ev.target).hasClass("fas") &&
+          !$(ev.target).hasClass("rollable")
+        ) {
+          const li = $(ev.currentTarget);
+          let itemId = li.data("itemId");
+          let item = this.actor.items.get(itemId);
+
+          if (!item) {
+            item = game.items.get(itemId);
+          }
+          if (!item) {
+            item = await ImportHelpers.findCompendiumEntityById("Item", itemId);
+          }
+          if (item?.sheet) {
+            if (
+              item?.type == "species" ||
+              item?.type == "career" ||
+              item?.type == "specialization"
+            )
+              item.sheet.render(true);
+            else this._itemDisplayDetails(item, ev);
+          }
+          
+          html.find("li.item-pill").on("click", async (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const li = event.currentTarget;
+            configureEffectApiDialog(li);
+          });
+        }
+      });
+
     // Toggle Force Power details
     html.find(".force-power").click(async (ev) => {
       ev.stopPropagation();
-      if (!$(ev.target).hasClass("fa-trash") && !$(ev.target).hasClass("fas") && !$(ev.target).hasClass("rollable")) {
+      if (
+        !$(ev.target).hasClass("fa-trash") &&
+        !$(ev.target).hasClass("fas") &&
+        !$(ev.target).hasClass("rollable")
+      ) {
         const li = $(ev.currentTarget);
         const itemId = li.data("itemId");
         const item = this.actor.items.get(itemId);
@@ -489,8 +571,12 @@ export class ActorSheetFFG extends ActorSheet {
               icon: '<i class="fas fa-check"></i>',
               label: game.i18n.localize("SWFFG.ButtonAccept"),
               callback: (html) => {
-                const talentsToRemove = $(html).find("input[type='checkbox']:checked");
-                CONFIG.logger.debug(`Removing ${talentsToRemove.length} talents`);
+                const talentsToRemove = $(html).find(
+                  "input[type='checkbox']:checked"
+                );
+                CONFIG.logger.debug(
+                  `Removing ${talentsToRemove.length} talents`
+                );
 
                 for (let i = 0; i < talentsToRemove.length; i += 1) {
                   const id = $(talentsToRemove[i]).val();
@@ -506,7 +592,8 @@ export class ActorSheetFFG extends ActorSheet {
         },
         {
           classes: ["dialog", "starwarsffg"],
-          template: "systems/starwarsffg/templates/actors/dialogs/ffg-talent-selector.html",
+          template:
+            "systems/starwarsffg/templates/actors/dialogs/ffg-talent-selector.html",
         }
       ).render(true);
     });
@@ -525,7 +612,9 @@ export class ActorSheetFFG extends ActorSheet {
           item = await ImportHelpers.findCompendiumEntityById("Item", itemId);
         }
       }
-      item.update({ ["data.quantity.value"]: item.data.data.quantity.value + 1 });
+      item.update({
+        ["data.quantity.value"]: item.data.data.quantity.value + 1,
+      });
     });
 
     html.find(".item-quantity .quantity.decrease").click(async (ev) => {
@@ -540,7 +629,10 @@ export class ActorSheetFFG extends ActorSheet {
           item = await ImportHelpers.findCompendiumEntityById("Item", itemId);
         }
       }
-      let count = item.data.data.quantity.value - 1 > 0 ? item.data.data.quantity.value - 1 : 0;
+      let count =
+        item.data.data.quantity.value - 1 > 0
+          ? item.data.data.quantity.value - 1
+          : 0;
       item.update({ ["data.quantity.value"]: count });
     });
     // Roll Skill
@@ -568,19 +660,36 @@ export class ActorSheetFFG extends ActorSheet {
         let skill = sheet.data.skills[data["skill"]];
         let characteristic = sheet.data.characteristics[skill.characteristic];
         let difficulty = data["difficulty"];
-        await DiceHelpers.rollSkillDirect(skill, characteristic, difficulty, sheet);
+        await DiceHelpers.rollSkillDirect(
+          skill,
+          characteristic,
+          difficulty,
+          sheet
+        );
       }
     });
 
     // Add or Remove Attribute
-    html.find(".attributes").on("click", ".attribute-control", ModifierHelpers.onClickAttributeControl.bind(this));
+    html
+      .find(".attributes")
+      .on(
+        "click",
+        ".attribute-control",
+        ModifierHelpers.onClickAttributeControl.bind(this)
+      );
 
     // transfer items between owned actor objects
     const dragDrop = new DragDrop({
       dragSelector: ".items-list .item",
       dropSelector: ".sheet-body",
-      permissions: { dragstart: this._canDragStart.bind(this), drop: this._canDragDrop.bind(this) },
-      callbacks: { dragstart: this._onTransferItemDragStart.bind(this), drop: this._onTransferItemDrop.bind(this) },
+      permissions: {
+        dragstart: this._canDragStart.bind(this),
+        drop: this._canDragDrop.bind(this),
+      },
+      callbacks: {
+        dragstart: this._onTransferItemDragStart.bind(this),
+        drop: this._onTransferItemDrop.bind(this),
+      },
     });
 
     dragDrop.bind(html[0]);
@@ -588,32 +697,39 @@ export class ActorSheetFFG extends ActorSheet {
     const dragDrop1 = new DragDrop({
       dragSelector: ".skill",
       dropSelector: ".macro",
-      permissions: { dragstart: this._canDragStart.bind(this), drop: this._canDragDrop.bind(this) },
+      permissions: {
+        dragstart: this._canDragStart.bind(this),
+        drop: this._canDragDrop.bind(this),
+      },
       callbacks: { dragstart: this._onSkillDragStart.bind(this) },
     });
 
     dragDrop1.bind(html[0]);
 
-    html.find("input[type='text'][data-dtype='Number'][min][max]").on("change", (event) => {
-      const a = event.currentTarget;
-      const min = parseInt($(a).attr("min"), 10);
-      const max = parseInt($(a).attr("max"), 10);
-      const value = parseInt($(a).val(), 10) || min;
+    html
+      .find("input[type='text'][data-dtype='Number'][min][max]")
+      .on("change", (event) => {
+        const a = event.currentTarget;
+        const min = parseInt($(a).attr("min"), 10);
+        const max = parseInt($(a).attr("max"), 10);
+        const value = parseInt($(a).val(), 10) || min;
 
-      if (value > max) {
-        $(a).val(max);
-      }
-    });
+        if (value > max) {
+          $(a).val(max);
+        }
+      });
 
-    html.find("input[type='text'][data-dtype='Number'][pattern]").on("change", (event) => {
-      const a = event.currentTarget;
-      const value = $(a).val() || "2";
-      const pattern = new RegExp($(a).attr("pattern"));
+    html
+      .find("input[type='text'][data-dtype='Number'][pattern]")
+      .on("change", (event) => {
+        const a = event.currentTarget;
+        const value = $(a).val() || "2";
+        const pattern = new RegExp($(a).attr("pattern"));
 
-      if (!value.match(pattern)) {
-        $(a).val("2");
-      }
-    });
+        if (!value.match(pattern)) {
+          $(a).val("2");
+        }
+      });
 
     html.find(".add-obligation").on("click", async (event) => {
       event.preventDefault();
@@ -668,9 +784,16 @@ export class ActorSheetFFG extends ActorSheet {
       let details = li.children(".item-details");
       details.slideUp(200, () => details.remove());
     } else {
-      let div = $(`<div class="item-details">${PopoutEditor.renderDiceImages(itemDetails.description, this.actor.data)}</div>`);
+      let div = $(
+        `<div class="item-details">${PopoutEditor.renderDiceImages(
+          itemDetails.description,
+          this.actor.data
+        )}</div>`
+      );
       let props = $(`<div class="item-properties"></div>`);
-      itemDetails.properties.forEach((p) => props.append(`<span class="tag">${p}</span>`));
+      itemDetails.properties.forEach((p) =>
+        props.append(`<span class="tag">${p}</span>`)
+      );
       div.append(props);
       li.append(div.hide());
       $(div)
@@ -683,9 +806,15 @@ export class ActorSheetFFG extends ActorSheet {
           if (data) {
             let sheet = this.getData();
             let skill = sheet.data.skills[data["skill"]];
-            let characteristic = sheet.data.characteristics[skill.characteristic];
+            let characteristic =
+              sheet.data.characteristics[skill.characteristic];
             let difficulty = data["difficulty"];
-            await DiceHelpers.rollSkillDirect(skill, characteristic, difficulty, sheet);
+            await DiceHelpers.rollSkillDirect(
+              skill,
+              characteristic,
+              difficulty,
+              sheet
+            );
           }
         });
 
@@ -707,7 +836,12 @@ export class ActorSheetFFG extends ActorSheet {
       let details = li.children(".item-details");
       details.slideUp(200, () => details.remove());
     } else {
-      let div = $(`<div class="item-details">${PopoutEditor.renderDiceImages(desc, this.actor.data)}</div>`);
+      let div = $(
+        `<div class="item-details">${PopoutEditor.renderDiceImages(
+          desc,
+          this.actor.data
+        )}</div>`
+      );
       li.append(div.hide());
       div.slideDown(200);
     }
@@ -757,7 +891,7 @@ export class ActorSheetFFG extends ActorSheet {
       item = await ImportHelpers.findCompendiumEntityById("Item", itemId);
     }
 
-    const itemDetails = { "desc": desc, "name": name };
+    const itemDetails = { desc: desc, name: name };
     const template = "systems/starwarsffg/templates/chat/force-power-card.html";
     const html = await renderTemplate(template, { itemDetails, item });
 
@@ -789,7 +923,9 @@ export class ActorSheetFFG extends ActorSheet {
 
     new Dialog(
       {
-        title: `${game.i18n.localize("SWFFG.SkillCharacteristicDialogTitle")} ${game.i18n.localize(label)}`,
+        title: `${game.i18n.localize(
+          "SWFFG.SkillCharacteristicDialogTitle"
+        )} ${game.i18n.localize(label)}`,
         content: {
           options: CONFIG.FFG.characteristics,
           char: characteristic,
@@ -799,12 +935,20 @@ export class ActorSheetFFG extends ActorSheet {
             icon: '<i class="fas fa-check"></i>',
             label: game.i18n.localize("SWFFG.ButtonAccept"),
             callback: (html) => {
-              let newCharacteristic = $(html).find("input[type='radio']:checked").val();
+              let newCharacteristic = $(html)
+                .find("input[type='radio']:checked")
+                .val();
 
-              CONFIG.logger.debug(`Updating ${ability} Characteristic from ${characteristic} to ${newCharacteristic}`);
+              CONFIG.logger.debug(
+                `Updating ${ability} Characteristic from ${characteristic} to ${newCharacteristic}`
+              );
 
               let updateData = {};
-              setProperty(updateData, `data.skills.${ability}.characteristic`, newCharacteristic);
+              setProperty(
+                updateData,
+                `data.skills.${ability}.characteristic`,
+                newCharacteristic
+              );
 
               this.object.update(updateData);
             },
@@ -817,7 +961,8 @@ export class ActorSheetFFG extends ActorSheet {
       },
       {
         classes: ["dialog", "starwarsffg"],
-        template: "systems/starwarsffg/templates/actors/dialogs/ffg-skill-characteristic-selector.html",
+        template:
+          "systems/starwarsffg/templates/actors/dialogs/ffg-skill-characteristic-selector.html",
       }
     ).render(true);
   }
@@ -841,7 +986,9 @@ export class ActorSheetFFG extends ActorSheet {
             label: game.i18n.localize("SWFFG.ButtonAccept"),
             callback: (html) => {
               const name = $(html).find("input[name='name']").val();
-              const characteristic = $(html).find("select[name='characteristic']").val();
+              const characteristic = $(html)
+                .find("select[name='characteristic']")
+                .val();
 
               let newSkill = {
                 careerskill: false,
@@ -856,7 +1003,9 @@ export class ActorSheetFFG extends ActorSheet {
               };
 
               if (name.trim().length > 0) {
-                CONFIG.logger.debug(`Creating new skill ${name} (${characteristic})`);
+                CONFIG.logger.debug(
+                  `Creating new skill ${name} (${characteristic})`
+                );
                 let updateData = {};
                 setProperty(updateData, `data.skills.${name}`, newSkill);
 
@@ -872,7 +1021,8 @@ export class ActorSheetFFG extends ActorSheet {
       },
       {
         classes: ["dialog", "starwarsffg"],
-        template: "systems/starwarsffg/templates/actors/dialogs/ffg-skill-new.html",
+        template:
+          "systems/starwarsffg/templates/actors/dialogs/ffg-skill-new.html",
       }
     ).render(true);
   }
@@ -899,7 +1049,11 @@ export class ActorSheetFFG extends ActorSheet {
       useSkillForInitiative = true;
     }
 
-    setProperty(updateData, `data.skills.${skill}.useForInitiative`, useSkillForInitiative);
+    setProperty(
+      updateData,
+      `data.skills.${skill}.useForInitiative`,
+      useSkillForInitiative
+    );
     this.object.update(updateData);
   }
 
@@ -1034,13 +1188,22 @@ export class ActorSheetFFG extends ActorSheet {
       const specializationTalents = spec.data.talents;
       for (let talent in specializationTalents) {
         let gameItem;
-        if (specializationTalents[talent].pack && specializationTalents[talent].pack.length > 0) {
-          const pack = await game.packs.get(specializationTalents[talent]?.pack);
+        if (
+          specializationTalents[talent].pack &&
+          specializationTalents[talent].pack.length > 0
+        ) {
+          const pack = await game.packs.get(
+            specializationTalents[talent]?.pack
+          );
           if (pack) {
             await pack.getIndex();
-            let entry = await pack.index.find((e) => e.id === specializationTalents[talent].itemId);
+            let entry = await pack.index.find(
+              (e) => e.id === specializationTalents[talent].itemId
+            );
             if (!entry) {
-              entry = await pack.index.find((e) => e.name === specializationTalents[talent].name);
+              entry = await pack.index.find(
+                (e) => e.name === specializationTalents[talent].name
+              );
             }
             gameItem = await pack.getEntity(entry.id);
           }
@@ -1049,7 +1212,10 @@ export class ActorSheetFFG extends ActorSheet {
         }
 
         if (gameItem) {
-          this._updateSpecializationTalentReference(specializationTalents[talent], gameItem.data);
+          this._updateSpecializationTalentReference(
+            specializationTalents[talent],
+            gameItem.data
+          );
         }
       }
 
@@ -1076,7 +1242,7 @@ export class ActorSheetFFG extends ActorSheet {
           }
         });
       }
-      if(!globalTalentList.length && data.actor.data.talentList.length>0){
+      if (!globalTalentList.length && data.actor.data.talentList.length > 0) {
         data.actor.data.talentList.forEach((talent) => {
           const item = talent;
           item.firstSpecialization = spec.id;
@@ -1099,7 +1265,10 @@ export class ActorSheetFFG extends ActorSheet {
         });
         data.actor.data.talentList = globalTalentList;
       } else {
-        data.actor.data.talentList = mergeObject(data.actor.data.talentList, globalTalentList);
+        data.actor.data.talentList = mergeObject(
+          data.actor.data.talentList,
+          globalTalentList
+        );
       }
       console.log("globalTalentList", globalTalentList);
       console.log("data.actor.data.talentList", data.actor.data.talentList);
@@ -1119,7 +1288,8 @@ export class ActorSheetFFG extends ActorSheet {
     specializationTalentItem.activationLabel = talentItem.data.activation.label;
     specializationTalentItem.isRanked = talentItem.data.ranks.ranked;
     specializationTalentItem.isForceTalent = talentItem.data.isForceTalent;
-    specializationTalentItem.isConflictTalent = talentItem.data.isConflictTalent;
+    specializationTalentItem.isConflictTalent =
+      talentItem.data.isConflictTalent;
     specializationTalentItem.attributes = talentItem.data.attributes;
   }
 
@@ -1136,12 +1306,20 @@ export class ActorSheetFFG extends ActorSheet {
     const parent = $(a.parentElement);
     const parentPosition = $(parent).offset();
 
-    const windowHeight = parseInt($(parent).height(), 10) + 100 < 200 ? 200 : parseInt($(parent).height(), 10) + 100;
-    const windowWidth = parseInt($(parent).width(), 10) < 320 ? 320 : parseInt($(parent).width(), 10);
+    const windowHeight =
+      parseInt($(parent).height(), 10) + 100 < 200
+        ? 200
+        : parseInt($(parent).height(), 10) + 100;
+    const windowWidth =
+      parseInt($(parent).width(), 10) < 320
+        ? 320
+        : parseInt($(parent).width(), 10);
     const windowLeft = parseInt(parentPosition.left, 10);
     const windowTop = parseInt(parentPosition.top, 10);
 
-    const title = a.dataset.label ? `Editor for ${this.object.name}: ${label}` : `Editor for ${this.object.name}`;
+    const title = a.dataset.label
+      ? `Editor for ${this.object.name}: ${label}`
+      : `Editor for ${this.object.name}`;
 
     new PopoutEditor(this.object, {
       name: key,

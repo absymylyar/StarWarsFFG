@@ -2186,6 +2186,8 @@ img {
   flex: 1 0 120px;
   text-align: left;
   display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .starwarsffg .items .items-list .item-controls {

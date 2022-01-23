@@ -18,9 +18,14 @@ export default class ImportHelpers {
           if (currentSource !== paths[i]) {
             currentSource = `${currentSource}/${paths[i]}`;
           }
-          await FilePicker.createDirectory(startingSource, `${currentSource}`, { bucket: null });
+          await FilePicker.createDirectory(startingSource, `${currentSource}`, {
+            bucket: null,
+          });
         } catch (err) {
-          CONFIG.logger.debug(`Error verifying path ${startingSource}, ${path}`, err);
+          CONFIG.logger.debug(
+            `Error verifying path ${startingSource}, ${path}`,
+            err
+          );
         }
       }
     } catch (err) {
@@ -58,7 +63,9 @@ export default class ImportHelpers {
           const type = Helpers.getMimeType(header);
 
           const i = new File([img], filename, { type });
-          await Helpers.UploadFile("data", `${serverPath}`, i, { bucket: null });
+          await Helpers.UploadFile("data", `${serverPath}`, i, {
+            bucket: null,
+          });
         }
 
         return `${serverPath}/${filename}`;
@@ -136,21 +143,21 @@ export default class ImportHelpers {
       return item.flags.ffgimportid === id;
     });
   }
-  static packConversion={
-    "skill":["world.oggdudeskilldescriptions"],
-    "qualities":["world.oggdudeitemqualities"],
-    "armour":["world.oggdudearmor"],
-    "career":["world.oggdudecareers"],
-    "forcepower":["world.oggdudeforcepowers"],
-    "gear":["world.oggdudegear"],
-    "itemattachment":["world.oggdudeitemattachments"],
-    "signatureability":["world.oggdudesignatureabilities"],
-    "species":["world.oggdudespecies"],
-    "talent":["world.oggdudetalents"],
-    "weapon":["world.oggdudeweapons"],
-    "shipweapon":["world.oggdudevehicleweapons"],
-    "specialization":["world.oggdudespecializations"],
-    "vehicle":["world.oggdudevehiclesplanetary","world.oggdudevehiclesspace"]
+  static packConversion = {
+    skill: ["world.oggdudeskilldescriptions"],
+    qualities: ["world.oggdudeitemqualities"],
+    armour: ["world.oggdudearmor"],
+    career: ["world.oggdudecareers"],
+    forcepower: ["world.oggdudeforcepowers"],
+    gear: ["world.oggdudegear"],
+    itemattachment: ["world.oggdudeitemattachments"],
+    signatureability: ["world.oggdudesignatureabilities"],
+    species: ["world.oggdudespecies"],
+    talent: ["world.oggdudetalents"],
+    weapon: ["world.oggdudeweapons"],
+    shipweapon: ["world.oggdudevehicleweapons"],
+    specialization: ["world.oggdudespecializations"],
+    vehicle: ["world.oggdudevehiclesplanetary", "world.oggdudevehiclesspace"],
   };
   /**
    * Find a compendium entity by type an id
@@ -190,7 +197,9 @@ export default class ImportHelpers {
 
           const content = await pack.getDocuments();
           for (var i = 0; i < content.length; i++) {
-            CONFIG.temporary[packid][content[i].data.flags.ffgimportid] = duplicate(content[i]);
+            CONFIG.temporary[packid][
+              content[i].data.flags.ffgimportid
+            ] = duplicate(content[i]);
           }
         }
       } else {
@@ -231,22 +240,46 @@ export default class ImportHelpers {
 
     let itemAttributes = {};
     if (attrs.SoakValue) {
-      itemAttributes.Soak = { mod: "Soak", modtype: "Stat", value: attrs.SoakValue };
+      itemAttributes.Soak = {
+        mod: "Soak",
+        modtype: "Stat",
+        value: attrs.SoakValue,
+      };
     }
     if (attrs.ForceRating) {
-      itemAttributes.ForcePool = { mod: "ForcePool", modtype: "Stat", value: attrs.ForceRating };
+      itemAttributes.ForcePool = {
+        mod: "ForcePool",
+        modtype: "Stat",
+        value: attrs.ForceRating,
+      };
     }
     if (attrs.StrainThreshold) {
-      itemAttributes.Strain = { mod: "Strain", modtype: "Stat", value: attrs.StrainThreshold };
+      itemAttributes.Strain = {
+        mod: "Strain",
+        modtype: "Stat",
+        value: attrs.StrainThreshold,
+      };
     }
     if (attrs.DefenseRanged) {
-      itemAttributes["Defence-Ranged"] = { mod: "Defence-Ranged", modtype: "Stat", value: attrs.DefenseRanged };
+      itemAttributes["Defence-Ranged"] = {
+        mod: "Defence-Ranged",
+        modtype: "Stat",
+        value: attrs.DefenseRanged,
+      };
     }
     if (attrs.DefenseMelee) {
-      itemAttributes["Defence-Melee"] = { mod: "Defence-Melee", modtype: "Stat", value: attrs.DefenseMelee };
+      itemAttributes["Defence-Melee"] = {
+        mod: "Defence-Melee",
+        modtype: "Stat",
+        value: attrs.DefenseMelee,
+      };
     }
     if (attrs.WoundThreshold) {
-      itemAttributes.Wounds = { mod: "Wounds", modtype: "Stat", value: attrs.WoundThreshold };
+      itemAttributes.Wounds = {
+        mod: "Wounds",
+        modtype: "Stat",
+        value: attrs.WoundThreshold,
+      };
     }
 
     return itemAttributes;
@@ -265,7 +298,16 @@ export default class ImportHelpers {
     if (Object.keys(CONFIG.temporary.skills).includes(mod.Key)) {
       if (mod.SkillIsCareer) {
         modtype = "Career Skill";
-      } else if (mod.BoostCount || mod.SetbackCount || mod.AddSetbackCount || mod.ForceCount || mod.AdvantageCount || mod.ThreatCount || mod.SuccessCount || mod.FailureCount) {
+      } else if (
+        mod.BoostCount ||
+        mod.SetbackCount ||
+        mod.AddSetbackCount ||
+        mod.ForceCount ||
+        mod.AdvantageCount ||
+        mod.ThreatCount ||
+        mod.SuccessCount ||
+        mod.FailureCount
+      ) {
         modtype = "Skill Boost";
 
         if (mod.AddSetbackCount) {
@@ -374,7 +416,9 @@ export default class ImportHelpers {
       }
     } else if (attrs?.Mod?.DieModifiers?.DieModifier) {
       if (!Array.isArray(attrs.Mod.DieModifiers.DieModifier)) {
-        attrs.Mod.DieModifiers.DieModifier = [attrs.Mod.DieModifiers.DieModifier];
+        attrs.Mod.DieModifiers.DieModifier = [
+          attrs.Mod.DieModifiers.DieModifier,
+        ];
       }
       attrs.Mod.DieModifiers.DieModifier.forEach((mod) => {
         const attr = this.getBaseModAttributeObject({
@@ -400,12 +444,23 @@ export default class ImportHelpers {
 
     if (qualityList && qualityList.length > 0) {
       await this.asyncForEach(qualityList, async (quality) => {
-        let descriptor = await ImportHelpers.findCompendiumEntityByImportId("JournalEntry", quality.Key);
+        let descriptor = await ImportHelpers.findCompendiumEntityByImportId(
+          "JournalEntry",
+          quality.Key
+        );
 
         if (descriptor?.compendium?.metadata) {
-          qualities.push(`<a class="entity-link" draggable="true" data-pack="${descriptor.compendium.metadata.package}.${descriptor.compendium.metadata.name}" data-id="${descriptor.id}"> ${quality.Key}  ${quality.Count ? quality.Count : ""}</a>`);
+          qualities.push(
+            `<a class="entity-link" draggable="true" data-pack="${
+              descriptor.compendium.metadata.package
+            }.${descriptor.compendium.metadata.name}" data-id="${
+              descriptor.id
+            }"> ${quality.Key}  ${quality.Count ? quality.Count : ""}</a>`
+          );
         } else {
-          qualities.push(`${quality.Key} ${quality.Count ? quality.Count : ""}`);
+          qualities.push(
+            `${quality.Key} ${quality.Count ? quality.Count : ""}`
+          );
         }
 
         if (quality.Key === "DEFENSIVE") {
@@ -440,11 +495,11 @@ export default class ImportHelpers {
       biography: "",
       stats: {
         forcePool: {
-          max: 0
+          max: 0,
         },
         credits: {
           value: 0,
-        }
+        },
       },
       characteristics: {
         Brawn: {
@@ -464,193 +519,193 @@ export default class ImportHelpers {
         },
         Presence: {
           value: 0,
-        }
+        },
       },
       skills: {
-          "Astrogation": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "ASTRO",
-          },
-          "Athletics": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "ATHL",
-          },
-          "Brawl": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "BRAWL",
-          },
-          "Charm": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "CHARM",
-          },
-          "Coercion": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "COERC",
-          },
-          "Computers": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "COMP",
-          },
-          "Cool": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "COOL",
-          },
-          "Coordination": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "COORD",
-          },
-          "Deception": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "DECEP",
-          },
-          "Discipline": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "DISC",
-          },
-          "Gunnery": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "GUNN",
-          },
-          "Leadership": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "LEAD",
-          },
-          "Lightsaber": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "LTSABER",
-          },
-          "Mechanics": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "MECH",
-          },
-          "Medicine": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "MED",
-          },
-          "Melee": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "MELEE",
-          },
-          "Negotiation": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "NEG",
-          },
-          "Perception": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "PERC",
-          },
-          "Piloting: Planetary": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "PILOTPL",
-          },
-          "Piloting: Space": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "PILOTSP",
-          },
-          "Ranged: Heavy": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "RANGHVY",
-          },
-          "Ranged: Light": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "RANGLT",
-          },
-          "Resilience": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "RESIL",
-          },
-          "Skulduggery": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "SKUL",
-          },
-          "Stealth": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "STEAL",
-          },
-          "Streetwise": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "SW",
-          },
-          "Survival": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "SURV",
-          },
-          "Vigilance": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "VIGIL",
-          },
-          "Knowledge: Core Worlds": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "CORE",
-          },
-          "Knowledge: Education": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "EDU",
-          },
-          "Knowledge: Lore": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "LORE",
-          },
-          "Knowledge: Outer Rim": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "OUT",
-          },
-          "Knowledge: Underworld": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "UND",
-          },
-          "Knowledge: Warfare": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "WARF",
-          },
-          "Knowledge: Xenology": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "XEN",
-          },
-          "Cybernetics": {
-            "rank": 0,
-            "groupskill": false,
-            "Key": "CYBERNETICS",
-            "custom": true,
-            "type": "General",
-            "characteristic": "Intellect",
-            "label": "Cybernetics",
-          },
+        Astrogation: {
+          rank: 0,
+          groupskill: false,
+          Key: "ASTRO",
+        },
+        Athletics: {
+          rank: 0,
+          groupskill: false,
+          Key: "ATHL",
+        },
+        Brawl: {
+          rank: 0,
+          groupskill: false,
+          Key: "BRAWL",
+        },
+        Charm: {
+          rank: 0,
+          groupskill: false,
+          Key: "CHARM",
+        },
+        Coercion: {
+          rank: 0,
+          groupskill: false,
+          Key: "COERC",
+        },
+        Computers: {
+          rank: 0,
+          groupskill: false,
+          Key: "COMP",
+        },
+        Cool: {
+          rank: 0,
+          groupskill: false,
+          Key: "COOL",
+        },
+        Coordination: {
+          rank: 0,
+          groupskill: false,
+          Key: "COORD",
+        },
+        Deception: {
+          rank: 0,
+          groupskill: false,
+          Key: "DECEP",
+        },
+        Discipline: {
+          rank: 0,
+          groupskill: false,
+          Key: "DISC",
+        },
+        Gunnery: {
+          rank: 0,
+          groupskill: false,
+          Key: "GUNN",
+        },
+        Leadership: {
+          rank: 0,
+          groupskill: false,
+          Key: "LEAD",
+        },
+        Lightsaber: {
+          rank: 0,
+          groupskill: false,
+          Key: "LTSABER",
+        },
+        Mechanics: {
+          rank: 0,
+          groupskill: false,
+          Key: "MECH",
+        },
+        Medicine: {
+          rank: 0,
+          groupskill: false,
+          Key: "MED",
+        },
+        Melee: {
+          rank: 0,
+          groupskill: false,
+          Key: "MELEE",
+        },
+        Negotiation: {
+          rank: 0,
+          groupskill: false,
+          Key: "NEG",
+        },
+        Perception: {
+          rank: 0,
+          groupskill: false,
+          Key: "PERC",
+        },
+        "Piloting: Planetary": {
+          rank: 0,
+          groupskill: false,
+          Key: "PILOTPL",
+        },
+        "Piloting: Space": {
+          rank: 0,
+          groupskill: false,
+          Key: "PILOTSP",
+        },
+        "Ranged: Heavy": {
+          rank: 0,
+          groupskill: false,
+          Key: "RANGHVY",
+        },
+        "Ranged: Light": {
+          rank: 0,
+          groupskill: false,
+          Key: "RANGLT",
+        },
+        Resilience: {
+          rank: 0,
+          groupskill: false,
+          Key: "RESIL",
+        },
+        Skulduggery: {
+          rank: 0,
+          groupskill: false,
+          Key: "SKUL",
+        },
+        Stealth: {
+          rank: 0,
+          groupskill: false,
+          Key: "STEAL",
+        },
+        Streetwise: {
+          rank: 0,
+          groupskill: false,
+          Key: "SW",
+        },
+        Survival: {
+          rank: 0,
+          groupskill: false,
+          Key: "SURV",
+        },
+        Vigilance: {
+          rank: 0,
+          groupskill: false,
+          Key: "VIGIL",
+        },
+        "Knowledge: Core Worlds": {
+          rank: 0,
+          groupskill: false,
+          Key: "CORE",
+        },
+        "Knowledge: Education": {
+          rank: 0,
+          groupskill: false,
+          Key: "EDU",
+        },
+        "Knowledge: Lore": {
+          rank: 0,
+          groupskill: false,
+          Key: "LORE",
+        },
+        "Knowledge: Outer Rim": {
+          rank: 0,
+          groupskill: false,
+          Key: "OUT",
+        },
+        "Knowledge: Underworld": {
+          rank: 0,
+          groupskill: false,
+          Key: "UND",
+        },
+        "Knowledge: Warfare": {
+          rank: 0,
+          groupskill: false,
+          Key: "WARF",
+        },
+        "Knowledge: Xenology": {
+          rank: 0,
+          groupskill: false,
+          Key: "XEN",
+        },
+        Cybernetics: {
+          rank: 0,
+          groupskill: false,
+          Key: "CYBERNETICS",
+          custom: true,
+          type: "General",
+          characteristic: "Intellect",
+          label: "Cybernetics",
+        },
       },
       attributes: {},
       quantity: {
@@ -658,221 +713,219 @@ export default class ImportHelpers {
         max: 1,
       },
     },
-    flags: {
-    },
+    flags: {},
     items: [],
   };
   static characterTemplate = {
     name: "No Name",
     type: "character",
-    flags: {
-    },
+    flags: {},
     data: {
       attributes: {},
       characteristics: {
-        "Brawn": {
-          "value": 0,
+        Brawn: {
+          value: 0,
         },
-        "Agility": {
-          "value": 0,
+        Agility: {
+          value: 0,
         },
-        "Intellect": {
-          "value": 0,
+        Intellect: {
+          value: 0,
         },
-        "Cunning": {
-          "value": 0,
+        Cunning: {
+          value: 0,
         },
-        "Willpower": {
-          "value": 0,
+        Willpower: {
+          value: 0,
         },
-        "Presence": {
-          "value": 0,
+        Presence: {
+          value: 0,
         },
       },
       skills: {
-        "Astrogation": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "ASTRO",
+        Astrogation: {
+          rank: 0,
+          careerskill: false,
+          Key: "ASTRO",
         },
-        "Athletics": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "ATHL",
+        Athletics: {
+          rank: 0,
+          careerskill: false,
+          Key: "ATHL",
         },
-        "Brawl": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "BRAWL",
+        Brawl: {
+          rank: 0,
+          careerskill: false,
+          Key: "BRAWL",
         },
-        "Charm": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "CHARM",
+        Charm: {
+          rank: 0,
+          careerskill: false,
+          Key: "CHARM",
         },
-        "Coercion": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "COERC",
+        Coercion: {
+          rank: 0,
+          careerskill: false,
+          Key: "COERC",
         },
-        "Computers": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "COMP",
+        Computers: {
+          rank: 0,
+          careerskill: false,
+          Key: "COMP",
         },
-        "Cool": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "COOL",
+        Cool: {
+          rank: 0,
+          careerskill: false,
+          Key: "COOL",
         },
-        "Coordination": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "COORD",
+        Coordination: {
+          rank: 0,
+          careerskill: false,
+          Key: "COORD",
         },
-        "Deception": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "DECEP",
+        Deception: {
+          rank: 0,
+          careerskill: false,
+          Key: "DECEP",
         },
-        "Discipline": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "DISC",
+        Discipline: {
+          rank: 0,
+          careerskill: false,
+          Key: "DISC",
         },
-        "Gunnery": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "GUNN",
+        Gunnery: {
+          rank: 0,
+          careerskill: false,
+          Key: "GUNN",
         },
-        "Leadership": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "LEAD",
+        Leadership: {
+          rank: 0,
+          careerskill: false,
+          Key: "LEAD",
         },
-        "Lightsaber": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "LTSABER",
+        Lightsaber: {
+          rank: 0,
+          careerskill: false,
+          Key: "LTSABER",
         },
-        "Mechanics": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "MECH",
+        Mechanics: {
+          rank: 0,
+          careerskill: false,
+          Key: "MECH",
         },
-        "Medicine": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "MED",
+        Medicine: {
+          rank: 0,
+          careerskill: false,
+          Key: "MED",
         },
-        "Melee": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "MELEE",
+        Melee: {
+          rank: 0,
+          careerskill: false,
+          Key: "MELEE",
         },
-        "Negotiation": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "NEG",
+        Negotiation: {
+          rank: 0,
+          careerskill: false,
+          Key: "NEG",
         },
-        "Perception": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "PERC",
+        Perception: {
+          rank: 0,
+          careerskill: false,
+          Key: "PERC",
         },
         "Piloting: Planetary": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "PILOTPL",
+          rank: 0,
+          careerskill: false,
+          Key: "PILOTPL",
         },
         "Piloting: Space": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "PILOTSP",
+          rank: 0,
+          careerskill: false,
+          Key: "PILOTSP",
         },
         "Ranged: Heavy": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "RANGHVY",
+          rank: 0,
+          careerskill: false,
+          Key: "RANGHVY",
         },
         "Ranged: Light": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "RANGLT",
+          rank: 0,
+          careerskill: false,
+          Key: "RANGLT",
         },
-        "Resilience": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "RESIL",
+        Resilience: {
+          rank: 0,
+          careerskill: false,
+          Key: "RESIL",
         },
-        "Skulduggery": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "SKUL",
+        Skulduggery: {
+          rank: 0,
+          careerskill: false,
+          Key: "SKUL",
         },
-        "Stealth": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "STEAL",
+        Stealth: {
+          rank: 0,
+          careerskill: false,
+          Key: "STEAL",
         },
-        "Streetwise": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "SW",
+        Streetwise: {
+          rank: 0,
+          careerskill: false,
+          Key: "SW",
         },
-        "Survival": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "SURV",
+        Survival: {
+          rank: 0,
+          careerskill: false,
+          Key: "SURV",
         },
-        "Vigilance": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "VIGIL",
+        Vigilance: {
+          rank: 0,
+          careerskill: false,
+          Key: "VIGIL",
         },
         "Knowledge: Core Worlds": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "CORE",
+          rank: 0,
+          careerskill: false,
+          Key: "CORE",
         },
         "Knowledge: Education": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "EDU",
+          rank: 0,
+          careerskill: false,
+          Key: "EDU",
         },
         "Knowledge: Lore": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "LORE",
+          rank: 0,
+          careerskill: false,
+          Key: "LORE",
         },
         "Knowledge: Outer Rim": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "OUT",
+          rank: 0,
+          careerskill: false,
+          Key: "OUT",
         },
         "Knowledge: Underworld": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "UND",
+          rank: 0,
+          careerskill: false,
+          Key: "UND",
         },
         "Knowledge: Warfare": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "WARF",
+          rank: 0,
+          careerskill: false,
+          Key: "WARF",
         },
         "Knowledge: Xenology": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "XEN",
+          rank: 0,
+          careerskill: false,
+          Key: "XEN",
         },
-        "Cybernetics": {
-          "rank": 0,
-          "careerskill": false,
-          "Key": "CYBERNETICS",
-          "custom": true,
-          "type": "General",
-          "characteristic": "Intellect",
-          "label": "Cybernetics",
+        Cybernetics: {
+          rank: 0,
+          careerskill: false,
+          Key: "CYBERNETICS",
+          custom: true,
+          type: "General",
+          characteristic: "Intellect",
+          label: "Cybernetics",
         },
       },
       stats: {
@@ -883,8 +936,7 @@ export default class ImportHelpers {
           value: 0,
         },
       },
-      experience: {
-      },
+      experience: {},
       obligationlist: {},
       dutylist: {},
       morality: {},
@@ -894,9 +946,8 @@ export default class ImportHelpers {
     items: [],
   };
 
-  static async extractAdversaryCharacteristic(adversaryData, adversary)
-  {
-    adversaryData.Characteristics.CharCharacteristic.forEach((char) =>{
+  static async extractAdversaryCharacteristic(adversaryData, adversary) {
+    adversaryData.Characteristics.CharCharacteristic.forEach((char) => {
       const name = ImportHelpers.convertOGCharacteristic(char.Key);
       if (!adversary.data.attributes?.[name]) {
         adversary.data.attributes[name] = {
@@ -907,7 +958,9 @@ export default class ImportHelpers {
         };
       }
       if (char.Rank?.PurchasedRanks) {
-        let val = parseInt(char.Rank.PurchasedRanks, 10) + parseInt(char.Rank.StartingRanks, 10);
+        let val =
+          parseInt(char.Rank.PurchasedRanks, 10) +
+          parseInt(char.Rank.StartingRanks, 10);
         adversary.data.characteristics[name].value = val;
         adversary.data.attributes[name].value = val;
       }
@@ -916,41 +969,41 @@ export default class ImportHelpers {
     return adversary;
   }
 
-  static async extractAdversaryAbilities(adversaryData, adversary)
-  {
+  static async extractAdversaryAbilities(adversaryData, adversary) {
     // hacky way to get magic adversary abilities out of OggDude's and into VTT
-    if(adversaryData.Abilities?.AdvAbility) {
+    if (adversaryData.Abilities?.AdvAbility) {
       if (!Array.isArray(adversaryData.Abilities.AdvAbility)) {
-        adversaryData.Abilities.AdvAbility = [adversaryData.Abilities.AdvAbility];
+        adversaryData.Abilities.AdvAbility = [
+          adversaryData.Abilities.AdvAbility,
+        ];
       }
 
-      adversary.data.biography += "<p>&nbsp;</p>"
-      adversary.data.biography += "<h3>Abilities</h3>"
+      adversary.data.biography += "<p>&nbsp;</p>";
+      adversary.data.biography += "<h3>Abilities</h3>";
       adversaryData.Abilities.AdvAbility.forEach((ability) => {
-        adversary.data.biography += "<h4>"+ability.Name+"</h4>";
-        adversary.data.biography += "<p>"+ability.Description+"</p>";
-      }); 
+        adversary.data.biography += "<h4>" + ability.Name + "</h4>";
+        adversary.data.biography += "<p>" + ability.Description + "</p>";
+      });
     }
     return adversary;
   }
 
-  static async extractAdversaryAttrs(adversaryData, adversary)
-  {
+  static async extractAdversaryAttrs(adversaryData, adversary) {
     const attrs = adversaryData.Attributes;
 
     if (attrs.DefenseMelee) {
       var meledef = parseInt(attrs.DefenceMelee, 10);
-      adversary.data.attributes["Defence-Melee"] = {value: meledef};
+      adversary.data.attributes["Defence-Melee"] = { value: meledef };
     }
 
     if (attrs.DefenseRanged) {
       var rangeddef = parseInt(attrs.DefenseRanged, 10);
-      adversary.data.attributes["Ranged-Melee"] = {value: rangeddef};
+      adversary.data.attributes["Ranged-Melee"] = { value: rangeddef };
     }
 
     if (attrs.ForceRating) {
       var forcerating = parseInt(attrs.ForceRating, 10);
-      adversary.data.attributes["ForcePool"] = {value: forcerating};
+      adversary.data.attributes["ForcePool"] = { value: forcerating };
     }
 
     var soak = 0;
@@ -958,68 +1011,81 @@ export default class ImportHelpers {
     // if(attrs.SoakValue?.CharRanks) {
     //   soak = parseInt(attrs.SoakValue.CharRanks, 10);
     // }
-    if(attrs.SoakValue?.ItemRanks) {
+    if (attrs.SoakValue?.ItemRanks) {
       soak += parseInt(attrs.SoakValue.ItemRanks, 10);
     }
-    if(attrs.SoakValue?.PurchasedRanks) {
+    if (attrs.SoakValue?.PurchasedRanks) {
       soak += parseInt(attrs.SoakValue.PurchasedRanks, 10);
     }
-    adversary.data.attributes.Soak = {value: soak};
+    adversary.data.attributes.Soak = { value: soak };
 
     // Minions don't have strain so can skip in this case
-    if(adversaryData.Type !== "Minion")
-    {
+    if (adversaryData.Type !== "Minion") {
       var strain = 0;
-      if(attrs.StrainThreshold?.StartingRanks) {
+      if (attrs.StrainThreshold?.StartingRanks) {
         strain += parseInt(attrs.StrainThreshold.StartingRanks, 10);
       }
-      if(attrs.StrainThreshold?.ItemRanks) {
+      if (attrs.StrainThreshold?.ItemRanks) {
         strain += parseInt(attrs.StrainThreshold.ItemRanks, 10);
       }
-      if(attrs.StrainThreshold?.PurchasedRanks) {
+      if (attrs.StrainThreshold?.PurchasedRanks) {
         strain += parseInt(attrs.StrainThreshold.PurchasedRanks, 10);
       }
-      if(attrs.StrainThreshold?.CharRanks) {
+      if (attrs.StrainThreshold?.CharRanks) {
         strain += parseInt(attrs.StrainThreshold.CharRanks, 10);
       }
-      adversary.data.attributes.Strain = {value: strain};
+      adversary.data.attributes.Strain = { value: strain };
     }
-    
+
     var wounds = 0;
-    if(attrs.WoundThreshold?.StartingRanks) {
+    if (attrs.WoundThreshold?.StartingRanks) {
       wounds += parseInt(attrs.WoundThreshold.StartingRanks, 10);
     }
-    if(attrs.WoundThreshold?.ItemRanks) {
+    if (attrs.WoundThreshold?.ItemRanks) {
       wounds += parseInt(attrs.WoundThreshold.ItemRanks, 10);
     }
-    if(attrs.WoundThreshold?.PurchasedRanks) {
+    if (attrs.WoundThreshold?.PurchasedRanks) {
       wounds += parseInt(attrs.WoundThreshold.PurchasedRanks, 10);
     }
-    if(attrs.WoundThreshold?.CharRanks) {
+    if (attrs.WoundThreshold?.CharRanks) {
       wounds += parseInt(attrs.WoundThreshold.CharRanks, 10);
     }
-    adversary.data.unit_wounds = {value: wounds};
-    adversary.data.attributes.Wounds = {value: wounds};
+    adversary.data.unit_wounds = { value: wounds };
+    adversary.data.attributes.Wounds = { value: wounds };
 
     return adversary;
   }
 
-  static async extractAdversaryWeapons(adversaryData, adversary)
-  {
+  static async extractAdversaryWeapons(adversaryData, adversary) {
     if (adversaryData.Weapons?.CharWeapon) {
       if (!Array.isArray(adversaryData.Weapons.CharWeapon)) {
         adversaryData.Weapons.CharWeapon = [adversaryData.Weapons.CharWeapon];
       }
       await this.asyncForEach(adversaryData.Weapons.CharWeapon, async (w) => {
         try {
-          const weapon = JSON.parse(JSON.stringify(await this.findCompendiumEntityByImportId("Item", w.ItemKey, undefined, "weapon")));
+          const weapon = JSON.parse(
+            JSON.stringify(
+              await this.findCompendiumEntityByImportId(
+                "Item",
+                w.ItemKey,
+                undefined,
+                "weapon"
+              )
+            )
+          );
           delete weapon._id;
-    
-          const weaponItems = adversary.items.filter((s) => s.flags.ffgimportid === weapon.flags.ffgimportid);
-    
+
+          const weaponItems = adversary.items.filter(
+            (s) => s.flags.ffgimportid === weapon.flags.ffgimportid
+          );
+
           if (weaponItems.length > 0) {
             for (let i = 0; i < adversary.items.length; i += 1) {
-              if (adversary.items[i].type === "weapon" && adversary.items[i].flags.ffgimportid === weapon.flags.ffgimportid) {
+              if (
+                adversary.items[i].type === "weapon" &&
+                adversary.items[i].flags.ffgimportid ===
+                  weapon.flags.ffgimportid
+              ) {
                 adversary.items[i] = mergeObject(weapon, adversary.items[i]);
               }
             }
@@ -1029,14 +1095,17 @@ export default class ImportHelpers {
             } else {
               w.Count = 1;
             }
-    
+
             await this.asyncForEach(new Array(parseInt(w.Count, 10)), () => {
               adversary.items.push(weapon);
             });
           }
         } catch (err) {
           if (w.ItemKey?.length) {
-            CONFIG.logger.error(`Unable to add weapon (${w.ItemKey}) to adversary.`, err);
+            CONFIG.logger.error(
+              `Unable to add weapon (${w.ItemKey}) to adversary.`,
+              err
+            );
           }
         }
       });
@@ -1045,35 +1114,43 @@ export default class ImportHelpers {
     return adversary;
   }
 
-  static async extractAdversaryTalents(adversaryData, adversary)
-  {
+  static async extractAdversaryTalents(adversaryData, adversary) {
     // cheese my way around getting the talents on the Adv sheet into the VTT sheet by following much the same formula
     // that we do for weapons/gear.
-    if(adversaryData.Talents?.CharTalent)
-    {
+    if (adversaryData.Talents?.CharTalent) {
       if (!Array.isArray(adversaryData.Talents.CharTalent)) {
         adversaryData.Talents.CharTalent = [adversaryData.Talents.CharTalent];
       }
-        
+
       await this.asyncForEach(adversaryData.Talents.CharTalent, async (t) => {
-        try{
-          const compTalent = await this.findCompendiumEntityByImportId("Item", t.Key, undefined, "talent");
-          if(!compTalent){
+        try {
+          const compTalent = await this.findCompendiumEntityByImportId(
+            "Item",
+            t.Key,
+            undefined,
+            "talent"
+          );
+          if (!compTalent) {
             return;
           }
           const talent = JSON.parse(JSON.stringify(compTalent));
           delete talent._id;
-          const talentItems = adversary.items.filter((s) => s.flags.ffgimportid === talent.flags.ffgimportid);
+          const talentItems = adversary.items.filter(
+            (s) => s.flags.ffgimportid === talent.flags.ffgimportid
+          );
           if (talentItems.length > 0) {
             for (let i = 0; i < adversary.items.length; i += 1) {
-              if (adversary.items[i].type === "talent" && adversary.items[i].flags.ffgimportid === talent.flags.ffgimportid) {
+              if (
+                adversary.items[i].type === "talent" &&
+                adversary.items[i].flags.ffgimportid ===
+                  talent.flags.ffgimportid
+              ) {
                 adversary.items[i] = mergeObject(talent, adversary.items[i]);
               }
             }
           } else {
-            if(t.Ranks) {
-              if(talent.data?.ranks)
-              {
+            if (t.Ranks) {
+              if (talent.data?.ranks) {
                 let ranks = parseInt(t.Ranks, 10);
                 talent.data.ranks.current = ranks;
               }
@@ -1081,31 +1158,44 @@ export default class ImportHelpers {
             adversary.items.push(talent);
           }
         } catch (err) {
-          CONFIG.logger.error(`Unable to add talent (${t.ItemKey}) to adversary.`, err);
+          CONFIG.logger.error(
+            `Unable to add talent (${t.ItemKey}) to adversary.`,
+            err
+          );
         }
       });
     }
     return adversary;
   }
 
-  static async extractAdversaryArmor(adversaryData, adversary)
-  {
+  static async extractAdversaryArmor(adversaryData, adversary) {
     if (adversaryData.Armor?.CharArmor) {
       if (!Array.isArray(adversaryData.Armor.CharArmor)) {
         adversaryData.Armor.CharArmor = [adversaryData.Armor.CharArmor];
       }
-    
+
       await this.asyncForEach(adversaryData.Armor.CharArmor, async (w) => {
         try {
-          const compArmor = await this.findCompendiumEntityByImportId("Item", w.ItemKey, undefined, "armour");
-          if(compArmor) {
+          const compArmor = await this.findCompendiumEntityByImportId(
+            "Item",
+            w.ItemKey,
+            undefined,
+            "armour"
+          );
+          if (compArmor) {
             const armor = JSON.parse(JSON.stringify(compArmor));
             delete armor._id;
-            const armorItems = adversary.items.filter((s) => s.flags.ffgimportid === armor.flags.ffgimportid);
-      
+            const armorItems = adversary.items.filter(
+              (s) => s.flags.ffgimportid === armor.flags.ffgimportid
+            );
+
             if (armorItems.length > 0) {
               for (let i = 0; i < adversary.items.length; i += 1) {
-                if (adversary.items[i].type === "armor" && adversary.items[i].flags.ffgimportid === armor.flags.ffgimportid) {
+                if (
+                  adversary.items[i].type === "armor" &&
+                  adversary.items[i].flags.ffgimportid ===
+                    armor.flags.ffgimportid
+                ) {
                   adversary.items[i] = mergeObject(armor, adversary.items[i]);
                 }
               }
@@ -1115,35 +1205,44 @@ export default class ImportHelpers {
               } else {
                 w.Count = 1;
               }
-      
+
               await this.asyncForEach(new Array(parseInt(w.Count, 10)), () => {
                 adversary.items.push(armor);
               });
             }
           }
         } catch (err) {
-          CONFIG.logger.error(`Unable to add armor (${w.ItemKey}) to adversary.`, err);
+          CONFIG.logger.error(
+            `Unable to add armor (${w.ItemKey}) to adversary.`,
+            err
+          );
         }
       });
     }
     return adversary;
   }
 
-  static async extractAdversaryGear(adversaryData, adversary)
-  {
+  static async extractAdversaryGear(adversaryData, adversary) {
     if (adversaryData.Gear?.CharGear) {
       if (!Array.isArray(adversaryData.Gear.CharGear)) {
         adversaryData.Gear.CharGear = [adversaryData.Gear.CharGear];
       }
       await this.asyncForEach(adversaryData.Gear.CharGear, async (w) => {
         try {
-          const compGear = await this.findCompendiumEntityByImportId("Item", w.ItemKey, undefined, "gear");
-          if(compGear){
+          const compGear = await this.findCompendiumEntityByImportId(
+            "Item",
+            w.ItemKey,
+            undefined,
+            "gear"
+          );
+          if (compGear) {
             const gear = JSON.parse(JSON.stringify(compGear));
             delete gear._id;
-      
-            let gearItem = adversary.items.find((s) => s.flags.ffgimportid === gear.flags.ffgimportid);
-      
+
+            let gearItem = adversary.items.find(
+              (s) => s.flags.ffgimportid === gear.flags.ffgimportid
+            );
+
             let gearCount = 1;
             if (w?.Count) {
               gearCount = parseInt(w.Count, 10);
@@ -1151,7 +1250,7 @@ export default class ImportHelpers {
                 value: gearCount,
               };
             }
-      
+
             if (gearItem) {
               gearItem = mergeObject(gear, gearItem);
               gear.data.quantity.value = gearCount;
@@ -1160,15 +1259,17 @@ export default class ImportHelpers {
             }
           }
         } catch (err) {
-          CONFIG.logger.error(`Unable to add gear (${w.ItemKey}) to adversary.`, err);
+          CONFIG.logger.error(
+            `Unable to add gear (${w.ItemKey}) to adversary.`,
+            err
+          );
         }
       });
     }
-    return adversary
+    return adversary;
   }
 
-  static async extractAdversaryPowers(adversaryData, adversary)
-  {
+  static async extractAdversaryPowers(adversaryData, adversary) {
     let forcepowers = [];
     if (adversaryData.ForceAbilities?.CharForceAbility) {
       if (Array.isArray(adversaryData.ForceAbilities.CharForceAbility)) {
@@ -1178,39 +1279,48 @@ export default class ImportHelpers {
       }
     }
 
-    let basicPowers = forcepowers.filter((power) => power.Key.endsWith("BASIC"));
+    let basicPowers = forcepowers.filter((power) =>
+      power.Key.endsWith("BASIC")
+    );
 
     await this.asyncForEach(basicPowers, async (power) => {
-      try{
-      let powerKey = power.Key.slice(0, -5);
-      
-      const comForceAbility = await this.findCompendiumEntityByImportId("Item", powerKey, undefined, "forcepower");
-      if(comForceAbility)
-      {
-        let force = JSON.parse(JSON.stringify(comForceAbility));
-        // Just add all upgrades since there's no good way of mapping the NPC upgrades to their Character-sheet Counterparts
-        // todo : find a solution to this known issue.
-        Object.keys(force.data.upgrades).forEach((key) => {
-          force.data.upgrades[key].islearned = true;
-        });
+      try {
+        let powerKey = power.Key.slice(0, -5);
 
-        let forceItem = adversary.items.find((s) => s.flags.ffgimportid === force.flags.ffgimportid);
-        if (forceItem) {
-          forceItem = mergeObject(force, forceItem);
-        } else {
-          adversary.items.push(force);
+        const comForceAbility = await this.findCompendiumEntityByImportId(
+          "Item",
+          powerKey,
+          undefined,
+          "forcepower"
+        );
+        if (comForceAbility) {
+          let force = JSON.parse(JSON.stringify(comForceAbility));
+          // Just add all upgrades since there's no good way of mapping the NPC upgrades to their Character-sheet Counterparts
+          // todo : find a solution to this known issue.
+          Object.keys(force.data.upgrades).forEach((key) => {
+            force.data.upgrades[key].islearned = true;
+          });
+
+          let forceItem = adversary.items.find(
+            (s) => s.flags.ffgimportid === force.flags.ffgimportid
+          );
+          if (forceItem) {
+            forceItem = mergeObject(force, forceItem);
+          } else {
+            adversary.items.push(force);
+          }
         }
-      }
-      } catch (err)
-      {
-        CONFIG.logger.error(`Unable to add force power ${power.Key} to adversary.`, err);
+      } catch (err) {
+        CONFIG.logger.error(
+          `Unable to add force power ${power.Key} to adversary.`,
+          err
+        );
       }
     });
     return adversary;
   }
 
-  static async appendKnownIssuesAndNotesToDesc(adversary)
-  {
+  static async appendKnownIssuesAndNotesToDesc(adversary) {
     adversary.data.biography += `<p>&nbsp;</p>
     <h1>Importer Notes</h1>
     <p>This Adversary sheet was imported from OggDude's GMTools with DrMattsuu's NPC importer for SWFVTT, there are currently a number of known issues with this process.&nbsp;</p>
@@ -1227,31 +1337,35 @@ export default class ImportHelpers {
     return adversary;
   }
 
-  static async nemesisImport(adversaryData, updateDialog)
-  {
+  static async nemesisImport(adversaryData, updateDialog) {
     const npcName = adversaryData.Name;
     const npcKey = adversaryData.Key;
-    const exists = game.data.actors.find((actor) => actor.flags.ffgimportid == npcKey);
+    const exists = game.data.actors.find(
+      (actor) => actor.flags.ffgimportid == npcKey
+    );
 
     // copy template character json
     let adversary = JSON.parse(JSON.stringify(ImportHelpers.characterTemplate));
     adversary.name = npcName;
-    if(adversaryData.Description)
-      adversary.data.biography = adversaryData.Description; 
+    if (adversaryData.Description)
+      adversary.data.biography = adversaryData.Description;
     adversary.flags.ffgimportid = npcKey;
 
-    adversary = await ImportHelpers.extractAdversaryCharacteristic(adversaryData, adversary)
+    adversary = await ImportHelpers.extractAdversaryCharacteristic(
+      adversaryData,
+      adversary
+    );
 
-    if(exists?.items)
-    {
+    if (exists?.items) {
       adversary.items = exists.items;
     }
 
-    if(adversaryData.Skills?.CharSkill)
-    {
+    if (adversaryData.Skills?.CharSkill) {
       const skills = adversaryData.Skills.CharSkill;
       skills.forEach((skill) => {
-        let charSkill = Object.keys(adversary.data.skills).find((s) => adversary.data.skills[s].Key === skill.Key);
+        let charSkill = Object.keys(adversary.data.skills).find(
+          (s) => adversary.data.skills[s].Key === skill.Key
+        );
 
         if (!adversary.data.attributes?.[charSkill]) {
           adversary.data.attributes[charSkill] = {
@@ -1263,46 +1377,75 @@ export default class ImportHelpers {
         }
 
         // Characteristic override
-        if(skill.CharKeyOverride) {
-          const characteristicName = ImportHelpers.convertOGCharacteristic(skill.CharKeyOverride);
+        if (skill.CharKeyOverride) {
+          const characteristicName = ImportHelpers.convertOGCharacteristic(
+            skill.CharKeyOverride
+          );
           adversary.data.skills[charSkill].characteristic = characteristicName;
         }
 
         // add ranked skills
-        if(skill.Rank) {
-          adversary.data.skills[charSkill].rank = parseInt(skill.Rank.PurchasedRanks, 10);
-          adversary.data.attributes[charSkill].value = parseInt(skill.Rank.PurchasedRanks, 10);
+        if (skill.Rank) {
+          adversary.data.skills[charSkill].rank = parseInt(
+            skill.Rank.PurchasedRanks,
+            10
+          );
+          adversary.data.attributes[charSkill].value = parseInt(
+            skill.Rank.PurchasedRanks,
+            10
+          );
         }
         // don't need to bother with class skills, or specs/careers as adv don't have them.
       });
     }
     updateDialog(10);
 
-    adversary = await ImportHelpers.extractAdversaryAbilities(adversaryData, adversary);
+    adversary = await ImportHelpers.extractAdversaryAbilities(
+      adversaryData,
+      adversary
+    );
 
     updateDialog(20);
 
-    adversary = await ImportHelpers.extractAdversaryAttrs(adversaryData, adversary);
+    adversary = await ImportHelpers.extractAdversaryAttrs(
+      adversaryData,
+      adversary
+    );
 
     updateDialog(30);
 
-    adversary = await ImportHelpers.extractAdversaryPowers(adversaryData, adversary);
+    adversary = await ImportHelpers.extractAdversaryPowers(
+      adversaryData,
+      adversary
+    );
 
     updateDialog(40);
-    
-    adversary = await ImportHelpers.extractAdversaryWeapons(adversaryData, adversary);
+
+    adversary = await ImportHelpers.extractAdversaryWeapons(
+      adversaryData,
+      adversary
+    );
 
     updateDialog(50);
 
-    adversary = await ImportHelpers.extractAdversaryTalents(adversaryData, adversary);
-    
+    adversary = await ImportHelpers.extractAdversaryTalents(
+      adversaryData,
+      adversary
+    );
+
     updateDialog(60);
-    
-    adversary = await ImportHelpers.extractAdversaryArmor(adversaryData, adversary);
-    
+
+    adversary = await ImportHelpers.extractAdversaryArmor(
+      adversaryData,
+      adversary
+    );
+
     updateDialog(70);
-    
-    adversary = await ImportHelpers.extractAdversaryGear(adversaryData, adversary);
+
+    adversary = await ImportHelpers.extractAdversaryGear(
+      adversaryData,
+      adversary
+    );
 
     updateDialog(90);
 
@@ -1318,32 +1461,36 @@ export default class ImportHelpers {
     updateDialog(100);
   }
 
-  static async minionImport(adversaryData, updateDialog)
-  {
+  static async minionImport(adversaryData, updateDialog) {
     const npcName = adversaryData.Name;
     const npcKey = adversaryData.Key;
-    const exists = game.data.actors.find((actor) => actor.flags.ffgimportid == npcKey);
+    const exists = game.data.actors.find(
+      (actor) => actor.flags.ffgimportid == npcKey
+    );
 
     // minion sheet data obtained from an export and reformed for importing here.
     // Deep copy our template so we don't have to have a bunch of json sat here
     let adversary = JSON.parse(JSON.stringify(ImportHelpers.minionTemplate));
     adversary.name = npcName;
-    if(adversaryData.Description)
-      adversary.data.biography = adversaryData.Description; 
+    if (adversaryData.Description)
+      adversary.data.biography = adversaryData.Description;
     adversary.flags.ffgimportid = npcKey;
 
-    adversary = await ImportHelpers.extractAdversaryCharacteristic(adversaryData, adversary)
+    adversary = await ImportHelpers.extractAdversaryCharacteristic(
+      adversaryData,
+      adversary
+    );
 
-    if(exists?.items)
-    {
+    if (exists?.items) {
       adversary.items = exists.items;
     }
 
-    if(adversaryData.Skills?.CharSkill)
-    {
+    if (adversaryData.Skills?.CharSkill) {
       const skills = adversaryData.Skills.CharSkill;
       skills.forEach((skill) => {
-        let charSkill = Object.keys(adversary.data.skills).find((s) => adversary.data.skills[s].Key === skill.Key);
+        let charSkill = Object.keys(adversary.data.skills).find(
+          (s) => adversary.data.skills[s].Key === skill.Key
+        );
 
         if (!adversary.data.attributes?.[charSkill]) {
           adversary.data.attributes[charSkill] = {
@@ -1355,17 +1502,24 @@ export default class ImportHelpers {
         }
 
         // Characteristic override
-        if(skill.CharKeyOverride) {
-          const characteristicName = ImportHelpers.convertOGCharacteristic(skill.CharKeyOverride);
+        if (skill.CharKeyOverride) {
+          const characteristicName = ImportHelpers.convertOGCharacteristic(
+            skill.CharKeyOverride
+          );
           adversary.data.skills[charSkill].characteristic = characteristicName;
         }
 
         // check for purchased ranks, a sure sign of a rival class
-        if(skill.Rank) {
-          adversary.data.skills[charSkill].rank = parseInt(skill.Rank.PurchasedRanks, 10);
-          adversary.data.attributes[charSkill].value = parseInt(skill.Rank.PurchasedRanks, 10);
-        }
-        else {
+        if (skill.Rank) {
+          adversary.data.skills[charSkill].rank = parseInt(
+            skill.Rank.PurchasedRanks,
+            10
+          );
+          adversary.data.attributes[charSkill].value = parseInt(
+            skill.Rank.PurchasedRanks,
+            10
+          );
+        } else {
           // minion types don't expose data unless they are group skills
           adversary.data.skills[charSkill].groupskill = true;
         }
@@ -1374,34 +1528,55 @@ export default class ImportHelpers {
 
     updateDialog(10);
 
-    adversary = await ImportHelpers.extractAdversaryAbilities(adversaryData, adversary);
+    adversary = await ImportHelpers.extractAdversaryAbilities(
+      adversaryData,
+      adversary
+    );
 
     updateDialog(20);
 
-    adversary = await ImportHelpers.extractAdversaryAttrs(adversaryData, adversary);
+    adversary = await ImportHelpers.extractAdversaryAttrs(
+      adversaryData,
+      adversary
+    );
 
     updateDialog(30);
 
-    adversary = await ImportHelpers.extractAdversaryPowers(adversaryData, adversary);
+    adversary = await ImportHelpers.extractAdversaryPowers(
+      adversaryData,
+      adversary
+    );
 
     updateDialog(40);
-    
-    adversary = await ImportHelpers.extractAdversaryWeapons(adversaryData, adversary);
+
+    adversary = await ImportHelpers.extractAdversaryWeapons(
+      adversaryData,
+      adversary
+    );
 
     updateDialog(50);
 
-    adversary = await ImportHelpers.extractAdversaryTalents(adversaryData, adversary);
-    
+    adversary = await ImportHelpers.extractAdversaryTalents(
+      adversaryData,
+      adversary
+    );
+
     updateDialog(60);
-    
-    adversary = await ImportHelpers.extractAdversaryArmor(adversaryData, adversary);
-    
+
+    adversary = await ImportHelpers.extractAdversaryArmor(
+      adversaryData,
+      adversary
+    );
+
     updateDialog(70);
-    
-    adversary = await ImportHelpers.extractAdversaryGear(adversaryData, adversary);
+
+    adversary = await ImportHelpers.extractAdversaryGear(
+      adversaryData,
+      adversary
+    );
 
     updateDialog(90);
-    
+
     adversary = await ImportHelpers.appendKnownIssuesAndNotesToDesc(adversary);
 
     if (exists) {
@@ -1414,9 +1589,8 @@ export default class ImportHelpers {
     updateDialog(100);
   }
 
-  static async npcImport(data)
-  {
-    try{
+  static async npcImport(data) {
+    try {
       $(".import-progress.current").toggleClass("import-hidden");
 
       const updateDialog = (value, total = 100) => {
@@ -1430,22 +1604,21 @@ export default class ImportHelpers {
       const npcData = JXON.xmlToJs(xmlDoc);
 
       const adversaryData = npcData.Adversary;
-      if(adversaryData === undefined){
+      if (adversaryData === undefined) {
         throw "This is not an Adversary ogd exported XML file.";
       }
 
       const type = adversaryData.Type;
-      if(type === "Minion") {
+      if (type === "Minion") {
         console.log("minion type detected");
         await ImportHelpers.minionImport(adversaryData, updateDialog);
-      } else if(type === "Rival") {
+      } else if (type === "Rival") {
         console.log("Rival type detected");
         await ImportHelpers.minionImport(adversaryData, updateDialog);
-      } else if(type === "Nemesis") {
+      } else if (type === "Nemesis") {
         console.log("Nemesis type detected");
         await ImportHelpers.nemesisImport(adversaryData, updateDialog);
       }
-
     } catch (err) {
       CONFIG.logger.error(`Error while importing NPC`, err);
       ui.notifications.error("An error occured while importing NPC!");
@@ -1472,27 +1645,72 @@ export default class ImportHelpers {
 
       const characterName = characterData.Character.Description.CharName;
 
-      const exists = game.data.actors.find((actor) => actor.flags.ffgimportid === characterData.Character.Key);
+      const exists = game.data.actors.find(
+        (actor) => actor.flags.ffgimportid === characterData.Character.Key
+      );
 
       // copy template character json
-      let character = JSON.parse(JSON.stringify(ImportHelpers.characterTemplate));
+      let character = JSON.parse(
+        JSON.stringify(ImportHelpers.characterTemplate)
+      );
 
-      if(characterName) {
+      if (characterName) {
         character.name = characterName;
       }
-      
+
       character.flags.ffgimportid = characterData.Character.Key;
-      character.data.stats.credits.value = parseInt(characterData.Character.Credits, 10);
+      character.data.stats.credits.value = parseInt(
+        characterData.Character.Credits,
+        10
+      );
       character.data.experience = {
-        total: parseInt(characterData.Character.Experience.ExperienceRanks.StartingRanks ?? 0, 10) + parseInt(characterData.Character.Experience.ExperienceRanks.SpeciesRanks ?? 0, 10) + parseInt(characterData.Character.Experience.ExperienceRanks.PurchasedRanks ?? 0, 10),
-        available: parseInt(characterData.Character.Experience.ExperienceRanks.StartingRanks ?? 0, 10) + parseInt(characterData.Character.Experience.ExperienceRanks.SpeciesRanks ?? 0, 10) + parseInt(characterData.Character.Experience.ExperienceRanks.PurchasedRanks ?? 0, 10) - parseInt(characterData.Character.Experience.UsedExperience ?? 0, 10),
+        total:
+          parseInt(
+            characterData.Character.Experience.ExperienceRanks.StartingRanks ??
+              0,
+            10
+          ) +
+          parseInt(
+            characterData.Character.Experience.ExperienceRanks.SpeciesRanks ??
+              0,
+            10
+          ) +
+          parseInt(
+            characterData.Character.Experience.ExperienceRanks.PurchasedRanks ??
+              0,
+            10
+          ),
+        available:
+          parseInt(
+            characterData.Character.Experience.ExperienceRanks.StartingRanks ??
+              0,
+            10
+          ) +
+          parseInt(
+            characterData.Character.Experience.ExperienceRanks.SpeciesRanks ??
+              0,
+            10
+          ) +
+          parseInt(
+            characterData.Character.Experience.ExperienceRanks.PurchasedRanks ??
+              0,
+            10
+          ) -
+          parseInt(characterData.Character.Experience.UsedExperience ?? 0, 10),
       };
       character.data.morality = {
         label: "Morality",
-        strength: characterData.Character.Morality?.MoralityPairs?.MoralityPair?.StrengthKey,
+        strength:
+          characterData.Character.Morality?.MoralityPairs?.MoralityPair
+            ?.StrengthKey,
         type: "Number",
-        value: parseInt(characterData.Character.Morality.MoralityValue ?? 0, 10),
-        weakness: characterData.Character.Morality?.MoralityPairs?.MoralityPair?.WeaknessKey,
+        value: parseInt(
+          characterData.Character.Morality.MoralityValue ?? 0,
+          10
+        ),
+        weakness:
+          characterData.Character.Morality?.MoralityPairs?.MoralityPair
+            ?.WeaknessKey,
       };
       character.data.general = {
         age: characterData.Character.Description.Age,
@@ -1502,38 +1720,47 @@ export default class ImportHelpers {
         features: characterData.Character.Description.OtherFeatures,
         height: characterData.Character.Description.Height,
         gender: characterData.Character.Description.Gender,
-      }
+      };
 
       character.data.biography = characterData.Character.Story;
 
-      if(exists?.items)
-      {
+      if (exists?.items) {
         character.items = exists.items;
       }
 
-      characterData.Character.Characteristics.CharCharacteristic.forEach((char) => {
-        const name = ImportHelpers.convertOGCharacteristic(char.Key);
+      characterData.Character.Characteristics.CharCharacteristic.forEach(
+        (char) => {
+          const name = ImportHelpers.convertOGCharacteristic(char.Key);
 
-        if (!character.data.attributes?.[name]) {
-          character.data.attributes[name] = {
-            key: name,
-            mod: name,
-            modtype: "Characteristic",
-            value: 0,
-          };
+          if (!character.data.attributes?.[name]) {
+            character.data.attributes[name] = {
+              key: name,
+              mod: name,
+              modtype: "Characteristic",
+              value: 0,
+            };
+          }
+          if (char.Rank?.PurchasedRanks) {
+            character.data.characteristics[name].value = parseInt(
+              char.Rank.PurchasedRanks,
+              10
+            );
+            character.data.attributes[name].value = parseInt(
+              char.Rank.PurchasedRanks,
+              10
+            );
+          }
         }
-        if (char.Rank?.PurchasedRanks) {
-          character.data.characteristics[name].value = parseInt(char.Rank.PurchasedRanks, 10);
-          character.data.attributes[name].value = parseInt(char.Rank.PurchasedRanks, 10);
-        }
-      });
+      );
 
       const skills = characterData.Character.Skills.CharSkill;
 
       let speciesSkills = [];
 
       skills.forEach((skill) => {
-        let charSkill = Object.keys(character.data.skills).find((s) => character.data.skills[s].Key === skill.Key);
+        let charSkill = Object.keys(character.data.skills).find(
+          (s) => character.data.skills[s].Key === skill.Key
+        );
 
         if (skill.isCareer) {
           character.data.skills[charSkill].careerskill = true;
@@ -1549,8 +1776,14 @@ export default class ImportHelpers {
         }
 
         if (skill.Rank?.PurchasedRanks) {
-          character.data.skills[charSkill].rank = parseInt(skill.Rank.PurchasedRanks, 10);
-          character.data.attributes[charSkill].value = parseInt(skill.Rank.PurchasedRanks, 10);
+          character.data.skills[charSkill].rank = parseInt(
+            skill.Rank.PurchasedRanks,
+            10
+          );
+          character.data.attributes[charSkill].value = parseInt(
+            skill.Rank.PurchasedRanks,
+            10
+          );
         } else if (skill.Rank?.SpeciesRanks) {
           const speciesSkill = {
             key: charSkill,
@@ -1568,12 +1801,12 @@ export default class ImportHelpers {
       let forcepowers = [];
       if (characterData?.Character?.ForcePowers?.CharForcePower) {
         if (Array.isArray(characterData.Character.ForcePowers.CharForcePower)) {
-          forcepowers = characterData.Character.ForcePowers.CharForcePower.filter((power) => {
-            if (power.ForceAbilities.CharForceAbility.find((fa) => fa.Purchased === "true")) {
-              return true;
-            }
-            return false;
-          });
+          forcepowers = characterData.Character.ForcePowers.CharForcePower.filter(
+            (power) =>
+              power.ForceAbilities.CharForceAbility.some(
+                (fa) => fa.Purchased === "true"
+              )
+          );
         } else {
           forcepowers.push(characterData.Character.ForcePowers.CharForcePower);
         }
@@ -1582,7 +1815,12 @@ export default class ImportHelpers {
       updateDialog(10);
 
       try {
-        const speciesDBItem = await this.findCompendiumEntityByImportId("Item", characterData.Character.Species.SpeciesKey, undefined, "species");
+        const speciesDBItem = await this.findCompendiumEntityByImportId(
+          "Item",
+          characterData.Character.Species.SpeciesKey,
+          undefined,
+          "species"
+        );
 
         if (speciesDBItem) {
           let species = JSON.parse(JSON.stringify(speciesDBItem));
@@ -1590,7 +1828,12 @@ export default class ImportHelpers {
           for (let i = 0; i < speciesSkills.length; i += 1) {
             // first determine if the modifier exists, oggdudes doesn't differentiate between chosen skills (ie human) vs static skill (ie Nautolan)
 
-            const found = Object.values(species.data.attributes).filter((attr) => attr.mod === speciesSkills[i].mod && attr.modtype === speciesSkills[i].modtype && attr.value === speciesSkills[i].value);
+            const found = Object.values(species.data.attributes).filter(
+              (attr) =>
+                attr.mod === speciesSkills[i].mod &&
+                attr.modtype === speciesSkills[i].modtype &&
+                attr.value === speciesSkills[i].value
+            );
 
             if (!found?.length) {
               let attrId = Object.keys(species.data.attributes).length + 1;
@@ -1599,7 +1842,9 @@ export default class ImportHelpers {
           }
 
           // does the character data already include the species
-          let speciesItem = character.items.find((s) => s.flags.ffgimportid === species.flags.ffgimportid);
+          let speciesItem = character.items.find(
+            (s) => s.flags.ffgimportid === species.flags.ffgimportid
+          );
 
           if (speciesItem) {
             species = mergeObject(species, speciesItem);
@@ -1608,25 +1853,32 @@ export default class ImportHelpers {
           }
         }
       } catch (err) {
-        CONFIG.logger.error(`Unable to add species ${characterData.Character.Species.SpeciesKey} to character.`, err);
+        CONFIG.logger.error(
+          `Unable to add species ${characterData.Character.Species.SpeciesKey} to character.`,
+          err
+        );
       }
 
       let obligationlist = [];
       if (characterData.Character.Obligations.CharObligation) {
         let obligation = 0;
         if (Array.isArray(characterData.Character.Obligations.CharObligation)) {
-          characterData.Character.Obligations.CharObligation.forEach((CharObligation) => {
-            const nk = randomID();
-            const charobligation = {
-              key: nk,
-              type: CharObligation.Name,
-              magnitude: CharObligation.Size,
-            };
-            character.data.obligationlist[charobligation.key] = charobligation;
-            if (parseInt(CharObligation.Size, 10)) {
-              obligation += parseInt(CharObligation.Size, 10);
+          characterData.Character.Obligations.CharObligation.forEach(
+            (CharObligation) => {
+              const nk = randomID();
+              const charobligation = {
+                key: nk,
+                type: CharObligation.Name,
+                magnitude: CharObligation.Size,
+              };
+              character.data.obligationlist[
+                charobligation.key
+              ] = charobligation;
+              if (parseInt(CharObligation.Size, 10)) {
+                obligation += parseInt(CharObligation.Size, 10);
+              }
             }
-          });
+          );
         } else {
           const nk = randomID();
           const charobligation = {
@@ -1635,8 +1887,16 @@ export default class ImportHelpers {
             magnitude: characterData.Character.Obligations.CharObligation.Size,
           };
           character.data.obligationlist[charobligation.key] = charobligation;
-          if (parseInt(characterData.Character.Obligations.CharObligation.Size, 10)) {
-            obligation += parseInt(characterData.Character.Obligations.CharObligation.Size, 10);
+          if (
+            parseInt(
+              characterData.Character.Obligations.CharObligation.Size,
+              10
+            )
+          ) {
+            obligation += parseInt(
+              characterData.Character.Obligations.CharObligation.Size,
+              10
+            );
           }
         }
       }
@@ -1674,15 +1934,33 @@ export default class ImportHelpers {
       updateDialog(20);
 
       try {
-        const career = JSON.parse(JSON.stringify(await this.findCompendiumEntityByImportId("Item", characterData.Character.Career.CareerKey, undefined, "career")));
+        const career = JSON.parse(
+          JSON.stringify(
+            await this.findCompendiumEntityByImportId(
+              "Item",
+              characterData.Character.Career.CareerKey,
+              undefined,
+              "career"
+            )
+          )
+        );
         if (career) {
           if (characterData.Character.Career.CareerSkills?.Key) {
             characterData.Character.Career.CareerSkills.Key.forEach((key) => {
-              let charSkill = Object.keys(character.data.skills).find((s) => character.data.skills[s].Key === key);
-              let attrId = Object.keys(career.data.attributes).find((attr) => career.data.attributes[attr].modtype === "Skill Rank" && career.data.attributes[attr].mod === charSkill);
+              let charSkill = Object.keys(character.data.skills).find(
+                (s) => character.data.skills[s].Key === key
+              );
+              let attrId = Object.keys(career.data.attributes).find(
+                (attr) =>
+                  career.data.attributes[attr].modtype === "Skill Rank" &&
+                  career.data.attributes[attr].mod === charSkill
+              );
 
               if (career.data.attributes?.[attrId]?.value) {
-                const careerValue = parseInt(career.data.attributes[attrId].value, 10);
+                const careerValue = parseInt(
+                  career.data.attributes[attrId].value,
+                  10
+                );
                 career.data.attributes[attrId].value = careerValue + 1;
                 if (!career.data.attributes[attrId].key) {
                   career.data.attributes[attrId].key = charSkill;
@@ -1698,7 +1976,9 @@ export default class ImportHelpers {
             });
           }
 
-          let careerItem = character.items.find((s) => s.flags.ffgimportid === career.flags.ffgimportid);
+          let careerItem = character.items.find(
+            (s) => s.flags.ffgimportid === career.flags.ffgimportid
+          );
 
           if (careerItem) {
             careerItem = mergeObject(career, careerItem);
@@ -1707,34 +1987,59 @@ export default class ImportHelpers {
           }
         }
       } catch (err) {
-        CONFIG.logger.error(`Unable to add career ${characterData.Character.Career.CareerKey} to character.`, err);
+        CONFIG.logger.error(
+          `Unable to add career ${characterData.Character.Career.CareerKey} to character.`,
+          err
+        );
       }
 
       updateDialog(30);
 
       try {
-        let specialization = JSON.parse(JSON.stringify(await this.findCompendiumEntityByImportId("Item", characterData.Character.Career.StartingSpecKey, undefined, "specialization")));
+        let specialization = JSON.parse(
+          JSON.stringify(
+            await this.findCompendiumEntityByImportId(
+              "Item",
+              characterData.Character.Career.StartingSpecKey,
+              undefined,
+              "specialization"
+            )
+          )
+        );
         if (specialization) {
           if (characterData.Character.Career.CareerSpecSkills?.Key) {
-            characterData.Character.Career.CareerSpecSkills.Key.forEach((key) => {
-              let charSkill = Object.keys(character.data.skills).find((s) => character.data.skills[s].Key === key);
-              let attrId = Object.keys(specialization.data.attributes).find((attr) => specialization.data.attributes[attr].modtype === "Skill Rank" && specialization.data.attributes[attr].mod === charSkill);
+            characterData.Character.Career.CareerSpecSkills.Key.forEach(
+              (key) => {
+                let charSkill = Object.keys(character.data.skills).find(
+                  (s) => character.data.skills[s].Key === key
+                );
+                let attrId = Object.keys(specialization.data.attributes).find(
+                  (attr) =>
+                    specialization.data.attributes[attr].modtype ===
+                      "Skill Rank" &&
+                    specialization.data.attributes[attr].mod === charSkill
+                );
 
-              if (specialization.data.attributes?.[attrId]?.value) {
-                const specializationValue = parseInt(specialization.data.attributes[attrId].value, 10);
-                specialization.data.attributes[attrId].value = specializationValue + 1;
-                if (!specialization.data.attributes[attrId].key) {
-                  specialization.data.attributes[attrId].key = charSkill;
+                if (specialization.data.attributes?.[attrId]?.value) {
+                  const specializationValue = parseInt(
+                    specialization.data.attributes[attrId].value,
+                    10
+                  );
+                  specialization.data.attributes[attrId].value =
+                    specializationValue + 1;
+                  if (!specialization.data.attributes[attrId].key) {
+                    specialization.data.attributes[attrId].key = charSkill;
+                  }
+                } else {
+                  specialization.data.attributes[attrId] = {
+                    key: charSkill,
+                    mod: charSkill,
+                    modtype: "Skill Rank",
+                    value: 1,
+                  };
                 }
-              } else {
-                specialization.data.attributes[attrId] = {
-                  key: charSkill,
-                  mod: charSkill,
-                  modtype: "Skill Rank",
-                  value: 1,
-                };
               }
-            });
+            );
           }
 
           const funcGetTalent = async (characterSpecTalent, talents = []) => {
@@ -1744,10 +2049,12 @@ export default class ImportHelpers {
                 rank: 0,
                 activation: "Passive",
                 islearned: false,
-                talentKey: characterSpecTalent.Key
+                talentKey: characterSpecTalent.Key,
               };
               try {
-                const talent = talents.find((t)=>t.data.flags.ffgimportid === characterSpecTalent.Key);//await this.findCompendiumTalentByKey(characterSpecTalent.Key);
+                const talent = talents.find(
+                  (t) => t.data.flags.ffgimportid === characterSpecTalent.Key
+                ); //await this.findCompendiumTalentByKey(characterSpecTalent.Key);
                 if (talent) {
                   output.isRanked = talent.data.data.ranks.ranked;
                   output.rank = talent.data.data.ranks.current;
@@ -1756,7 +2063,10 @@ export default class ImportHelpers {
                 }
                 output.islearned = true;
               } catch (err) {
-                CONFIG.logger.error(`Unable to add specialization ${characterSpecTalent.Key} to character.`, err);
+                CONFIG.logger.error(
+                  `Unable to add specialization ${characterSpecTalent.Key} to character.`,
+                  err
+                );
               }
               return output;
             }
@@ -1770,96 +2080,90 @@ export default class ImportHelpers {
             updateDialog(30 + miniValue);
           };
 
-          if (!Array.isArray(characterData.Character.Specializations.CharSpecialization)) {
-            characterData.Character.Specializations.CharSpecialization = [characterData.Character.Specializations.CharSpecialization];
+          if (
+            !Array.isArray(
+              characterData.Character.Specializations.CharSpecialization
+            )
+          ) {
+            characterData.Character.Specializations.CharSpecialization = [
+              characterData.Character.Specializations.CharSpecialization,
+            ];
           }
 
           let talents = [];
-          const talentPack = await game.packs.get("world.oggdudetalents");      
-          if(talentPack){
+          const talentPack = await game.packs.get("world.oggdudetalents");
+          if (talentPack) {
             talents = await talentPack.getDocuments();
           }
 
-          if (characterData?.Character?.Specializations?.CharSpecialization?.length) {
-            specTotal = characterData.Character.Specializations.CharSpecialization.length;
+          if (
+            characterData?.Character?.Specializations?.CharSpecialization
+              ?.length
+          ) {
+            specTotal =
+              characterData.Character.Specializations.CharSpecialization.length;
             updateDialogSpecialization(specCount, specTotal);
-            await this.asyncForEach(characterData.Character.Specializations.CharSpecialization, async (spec) => {
-              if (spec.isStartingSpec && spec.isStartingSpec === "true") {
-                specTotal += spec.Talents.CharTalent.length;
-                for (let i = 0; i < spec.Talents.CharTalent.length; i += 1) {
-                  const talent = await funcGetTalent(spec.Talents.CharTalent[i], talents);
-                  console.log("talent", talent);
-                  if (talent) {
-                    specialization.data.talents[`talent${i}`] = { ...specialization.data.talents[`talent${i}`], ...talent };
-
-                    if (spec.Talents.CharTalent[i]?.BonusChars?.BonusChar) {
-                      if (Array.isArray(spec.Talents.CharTalent[i]?.BonusChars?.BonusChar)) {
-                        await this.asyncForEach(spec.Talents.CharTalent[i].BonusChars.BonusChar, async (char) => {
-                          let attrId = Object.keys(specialization.data.talents[`talent${i}`].attributes).length + 1;
-
-                          specialization.data.talents[`talent${i}`].attributes[`attr${attrId}`] = {
-                            isCheckbox: false,
-                            mod: this.convertOGCharacteristic(char.CharKey),
-                            modtype: "Characteristic",
-                            value: char.Bonus,
-                          };
-                        });
-                      } else {
-                        let attrId = Object.keys(specialization.data.talents[`talent${i}`].attributes).length + 1;
-
-                        specialization.data.talents[`talent${i}`].attributes[`attr${attrId}`] = {
-                          isCheckbox: false,
-                          mod: this.convertOGCharacteristic(spec.Talents.CharTalent[i].BonusChars.BonusChar.CharKey),
-                          modtype: "Characteristic",
-                          value: spec.Talents.CharTalent[i].BonusChars.BonusChar.Bonus,
-                        };
-                      }
-                    }
-                  }
-                  specCount += 1;
-                  updateDialogSpecialization(specCount, specTotal);
-                }
-
-                specCount += 1;
-                updateDialogSpecialization(specCount, specTotal);
-
-                let specializationItem = character.items.find((s) => s.flags.ffgimportid === specialization.flags.ffgimportid);
-
-                if (specializationItem) {
-                  specializationItem = mergeObject(specialization, specializationItem);
-                } else {
-                  character.items.push(specialization);
-                }
-              } else {
-                try {
-                  let newspec = JSON.parse(JSON.stringify(await this.findCompendiumEntityByImportId("Item", spec.Key, undefined, "specialization")));
+            await this.asyncForEach(
+              characterData.Character.Specializations.CharSpecialization,
+              async (spec) => {
+                if (spec.isStartingSpec && spec.isStartingSpec === "true") {
                   specTotal += spec.Talents.CharTalent.length;
-                  updateDialogSpecialization(specCount, specTotal);
                   for (let i = 0; i < spec.Talents.CharTalent.length; i += 1) {
-                    const talent = await funcGetTalent(spec.Talents.CharTalent[i], talents);
+                    const talent = await funcGetTalent(
+                      spec.Talents.CharTalent[i],
+                      talents
+                    );
+                    console.log("talent", talent);
                     if (talent) {
-                      newspec.data.talents[`talent${i}`] = { ...newspec.data.talents[`talent${i}`], ...talent };
+                      specialization.data.talents[`talent${i}`] = {
+                        ...specialization.data.talents[`talent${i}`],
+                        ...talent,
+                      };
 
                       if (spec.Talents.CharTalent[i]?.BonusChars?.BonusChar) {
-                        if (Array.isArray(spec.Talents.CharTalent[i]?.BonusChars?.BonusChar)) {
-                          await this.asyncForEach(spec.Talents.CharTalent[i].BonusChars.BonusChar, async (char) => {
-                            let attrId = Object.keys(newspec.data.talents[`talent${i}`].attributes).length + 1;
+                        if (
+                          Array.isArray(
+                            spec.Talents.CharTalent[i]?.BonusChars?.BonusChar
+                          )
+                        ) {
+                          await this.asyncForEach(
+                            spec.Talents.CharTalent[i].BonusChars.BonusChar,
+                            async (char) => {
+                              let attrId =
+                                Object.keys(
+                                  specialization.data.talents[`talent${i}`]
+                                    .attributes
+                                ).length + 1;
 
-                            newspec.data.talents[`talent${i}`].attributes[`attr${attrId}`] = {
-                              isCheckbox: false,
-                              mod: this.convertOGCharacteristic(char.CharKey),
-                              modtype: "Characteristic",
-                              value: char.Bonus,
-                            };
-                          });
+                              specialization.data.talents[
+                                `talent${i}`
+                              ].attributes[`attr${attrId}`] = {
+                                isCheckbox: false,
+                                mod: this.convertOGCharacteristic(char.CharKey),
+                                modtype: "Characteristic",
+                                value: char.Bonus,
+                              };
+                            }
+                          );
                         } else {
-                          let attrId = Object.keys(newspec.data.talents[`talent${i}`].attributes).length + 1;
+                          let attrId =
+                            Object.keys(
+                              specialization.data.talents[`talent${i}`]
+                                .attributes
+                            ).length + 1;
 
-                          newspec.data.talents[`talent${i}`].attributes[`attr${attrId}`] = {
+                          specialization.data.talents[`talent${i}`].attributes[
+                            `attr${attrId}`
+                          ] = {
                             isCheckbox: false,
-                            mod: this.convertOGCharacteristic(spec.Talents.CharTalent[i].BonusChars.BonusChar.CharKey),
+                            mod: this.convertOGCharacteristic(
+                              spec.Talents.CharTalent[i].BonusChars.BonusChar
+                                .CharKey
+                            ),
                             modtype: "Characteristic",
-                            value: spec.Talents.CharTalent[i].BonusChars.BonusChar.Bonus,
+                            value:
+                              spec.Talents.CharTalent[i].BonusChars.BonusChar
+                                .Bonus,
                           };
                         }
                       }
@@ -1868,20 +2172,126 @@ export default class ImportHelpers {
                     updateDialogSpecialization(specCount, specTotal);
                   }
 
-                  let specializationItem = character.items.find((s) => s.flags.ffgimportid === newspec.flags.ffgimportid);
+                  specCount += 1;
+                  updateDialogSpecialization(specCount, specTotal);
+
+                  let specializationItem = character.items.find(
+                    (s) =>
+                      s.flags.ffgimportid === specialization.flags.ffgimportid
+                  );
 
                   if (specializationItem) {
-                    specializationItem = mergeObject(newspec, specializationItem);
+                    specializationItem = mergeObject(
+                      specialization,
+                      specializationItem
+                    );
                   } else {
-                    character.items.push(newspec);
+                    character.items.push(specialization);
                   }
-                } catch (err) {
-                  CONFIG.logger.error(`Unable to add specialization ${spec.Key} to character.`);
+                } else {
+                  try {
+                    let newspec = JSON.parse(
+                      JSON.stringify(
+                        await this.findCompendiumEntityByImportId(
+                          "Item",
+                          spec.Key,
+                          undefined,
+                          "specialization"
+                        )
+                      )
+                    );
+                    specTotal += spec.Talents.CharTalent.length;
+                    updateDialogSpecialization(specCount, specTotal);
+                    for (
+                      let i = 0;
+                      i < spec.Talents.CharTalent.length;
+                      i += 1
+                    ) {
+                      const talent = await funcGetTalent(
+                        spec.Talents.CharTalent[i],
+                        talents
+                      );
+                      if (talent) {
+                        newspec.data.talents[`talent${i}`] = {
+                          ...newspec.data.talents[`talent${i}`],
+                          ...talent,
+                        };
+
+                        if (spec.Talents.CharTalent[i]?.BonusChars?.BonusChar) {
+                          if (
+                            Array.isArray(
+                              spec.Talents.CharTalent[i]?.BonusChars?.BonusChar
+                            )
+                          ) {
+                            await this.asyncForEach(
+                              spec.Talents.CharTalent[i].BonusChars.BonusChar,
+                              async (char) => {
+                                let attrId =
+                                  Object.keys(
+                                    newspec.data.talents[`talent${i}`]
+                                      .attributes
+                                  ).length + 1;
+
+                                newspec.data.talents[`talent${i}`].attributes[
+                                  `attr${attrId}`
+                                ] = {
+                                  isCheckbox: false,
+                                  mod: this.convertOGCharacteristic(
+                                    char.CharKey
+                                  ),
+                                  modtype: "Characteristic",
+                                  value: char.Bonus,
+                                };
+                              }
+                            );
+                          } else {
+                            let attrId =
+                              Object.keys(
+                                newspec.data.talents[`talent${i}`].attributes
+                              ).length + 1;
+
+                            newspec.data.talents[`talent${i}`].attributes[
+                              `attr${attrId}`
+                            ] = {
+                              isCheckbox: false,
+                              mod: this.convertOGCharacteristic(
+                                spec.Talents.CharTalent[i].BonusChars.BonusChar
+                                  .CharKey
+                              ),
+                              modtype: "Characteristic",
+                              value:
+                                spec.Talents.CharTalent[i].BonusChars.BonusChar
+                                  .Bonus,
+                            };
+                          }
+                        }
+                      }
+                      specCount += 1;
+                      updateDialogSpecialization(specCount, specTotal);
+                    }
+
+                    let specializationItem = character.items.find(
+                      (s) => s.flags.ffgimportid === newspec.flags.ffgimportid
+                    );
+
+                    if (specializationItem) {
+                      specializationItem = mergeObject(
+                        newspec,
+                        specializationItem
+                      );
+                    } else {
+                      character.items.push(newspec);
+                    }
+                  } catch (err) {
+                    CONFIG.logger.error(
+                      `Unable to add specialization ${spec.Key} to character.`
+                    );
+                  }
+                  specCount += 1;
+                  updateDialogSpecialization(specCount, specTotal);
                 }
-                specCount += 1;
-                updateDialogSpecialization(specCount, specTotal);
               }
-            });
+            );
           }
         }
       } catch (err) {
@@ -1892,14 +2302,32 @@ export default class ImportHelpers {
 
       await this.asyncForEach(forcepowers, async (power) => {
         try {
-          let force = JSON.parse(JSON.stringify(await this.findCompendiumEntityByImportId("Item", power.Key, undefined, "forcepower")));
-          for (let i = 4; i < power.ForceAbilities.CharForceAbility.length; i += 1) {
+          let force = JSON.parse(
+            JSON.stringify(
+              await this.findCompendiumEntityByImportId(
+                "Item",
+                power.Key,
+                undefined,
+                "forcepower"
+              )
+            )
+          );
+          force.fKey = power.Key;
+          for (
+            let i = 4;
+            i < power.ForceAbilities.CharForceAbility.length;
+            i += 1
+          ) {
             if (power.ForceAbilities.CharForceAbility[i].Purchased) {
               force.data.upgrades[`upgrade${i - 4}`].islearned = true;
+              force.data.upgrades[`upgrade${i - 4}`].ftKey =
+                power.ForceAbilities.CharForceAbility[i].Key;
             }
           }
 
-          let forceItem = character.items.find((s) => s.flags.ffgimportid === force.flags.ffgimportid);
+          let forceItem = character.items.find(
+            (s) => s.flags.ffgimportid === force.flags.ffgimportid
+          );
 
           if (forceItem) {
             forceItem = mergeObject(force, forceItem);
@@ -1907,7 +2335,10 @@ export default class ImportHelpers {
             character.items.push(force);
           }
         } catch (err) {
-          CONFIG.logger.error(`Unable to add force power ${forcepowers.Key} to character.`, err);
+          CONFIG.logger.error(
+            `Unable to add force power ${forcepowers.Key} to character.`,
+            err
+          );
         }
       });
 
@@ -1915,107 +2346,181 @@ export default class ImportHelpers {
 
       if (characterData.Character?.Weapons?.CharWeapon) {
         if (!Array.isArray(characterData.Character.Weapons.CharWeapon)) {
-          characterData.Character.Weapons.CharWeapon = [characterData.Character.Weapons.CharWeapon];
+          characterData.Character.Weapons.CharWeapon = [
+            characterData.Character.Weapons.CharWeapon,
+          ];
         }
-        await this.asyncForEach(characterData.Character.Weapons.CharWeapon, async (w) => {
-          try {
-            const weapon = JSON.parse(JSON.stringify(await this.findCompendiumEntityByImportId("Item", w.ItemKey, undefined, "weapon")));
-            delete weapon._id;
+        await this.asyncForEach(
+          characterData.Character.Weapons.CharWeapon,
+          async (w) => {
+            try {
+              const weapon = JSON.parse(
+                JSON.stringify(
+                  await this.findCompendiumEntityByImportId(
+                    "Item",
+                    w.ItemKey,
+                    undefined,
+                    "weapon"
+                  )
+                )
+              );
+              delete weapon._id;
 
-            const weaponItems = character.items.filter((s) => s.flags.ffgimportid === weapon.flags.ffgimportid);
+              const weaponItems = character.items.filter(
+                (s) => s.flags.ffgimportid === weapon.flags.ffgimportid
+              );
 
-            if (weaponItems.length > 0) {
-              for (let i = 0; i < character.items.length; i += 1) {
-                if (character.items[i].type === "weapon" && character.items[i].flags.ffgimportid === weapon.flags.ffgimportid) {
-                  character.items[i] = mergeObject(weapon, character.items[i]);
+              if (weaponItems.length > 0) {
+                for (let i = 0; i < character.items.length; i += 1) {
+                  if (
+                    character.items[i].type === "weapon" &&
+                    character.items[i].flags.ffgimportid ===
+                      weapon.flags.ffgimportid
+                  ) {
+                    character.items[i] = mergeObject(
+                      weapon,
+                      character.items[i]
+                    );
+                  }
                 }
-              }
-            } else {
-              if (w?.Count) {
-                w.Count = parseInt(w.Count, 10);
               } else {
-                w.Count = 1;
-              }
+                if (w?.Count) {
+                  w.Count = parseInt(w.Count, 10);
+                } else {
+                  w.Count = 1;
+                }
 
-              await this.asyncForEach(new Array(parseInt(w.Count, 10)), () => {
-                character.items.push(weapon);
-              });
-            }
-          } catch (err) {
-            if (w.ItemKey?.length) {
-              CONFIG.logger.error(`Unable to add weapon (${w.ItemKey}) to character.`, err);
+                await this.asyncForEach(
+                  new Array(parseInt(w.Count, 10)),
+                  () => {
+                    character.items.push(weapon);
+                  }
+                );
+              }
+            } catch (err) {
+              if (w.ItemKey?.length) {
+                CONFIG.logger.error(
+                  `Unable to add weapon (${w.ItemKey}) to character.`,
+                  err
+                );
+              }
             }
           }
-        });
+        );
       }
 
       updateDialog(60);
 
       if (characterData.Character?.Armor?.CharArmor) {
         if (!Array.isArray(characterData.Character.Armor.CharArmor)) {
-          characterData.Character.Armor.CharArmor = [characterData.Character.Armor.CharArmor];
+          characterData.Character.Armor.CharArmor = [
+            characterData.Character.Armor.CharArmor,
+          ];
         }
 
-        await this.asyncForEach(characterData.Character.Armor.CharArmor, async (w) => {
-          try {
-            const armor = JSON.parse(JSON.stringify(await this.findCompendiumEntityByImportId("Item", w.ItemKey, undefined, "armour")));
-            delete armor._id;
-            const armorItems = character.items.filter((s) => s.flags.ffgimportid === armor.flags.ffgimportid);
+        await this.asyncForEach(
+          characterData.Character.Armor.CharArmor,
+          async (w) => {
+            try {
+              const armor = JSON.parse(
+                JSON.stringify(
+                  await this.findCompendiumEntityByImportId(
+                    "Item",
+                    w.ItemKey,
+                    undefined,
+                    "armour"
+                  )
+                )
+              );
+              delete armor._id;
+              const armorItems = character.items.filter(
+                (s) => s.flags.ffgimportid === armor.flags.ffgimportid
+              );
 
-            if (armorItems.length > 0) {
-              for (let i = 0; i < character.items.length; i += 1) {
-                if (character.items[i].type === "armor" && character.items[i].flags.ffgimportid === armor.flags.ffgimportid) {
-                  character.items[i] = mergeObject(armor, character.items[i]);
+              if (armorItems.length > 0) {
+                for (let i = 0; i < character.items.length; i += 1) {
+                  if (
+                    character.items[i].type === "armor" &&
+                    character.items[i].flags.ffgimportid ===
+                      armor.flags.ffgimportid
+                  ) {
+                    character.items[i] = mergeObject(armor, character.items[i]);
+                  }
                 }
-              }
-            } else {
-              if (w?.Count) {
-                w.Count = parseInt(w.Count, 10);
               } else {
-                w.Count = 1;
-              }
+                if (w?.Count) {
+                  w.Count = parseInt(w.Count, 10);
+                } else {
+                  w.Count = 1;
+                }
 
-              await this.asyncForEach(new Array(parseInt(w.Count, 10)), () => {
-                character.items.push(armor);
-              });
+                await this.asyncForEach(
+                  new Array(parseInt(w.Count, 10)),
+                  () => {
+                    character.items.push(armor);
+                  }
+                );
+              }
+            } catch (err) {
+              CONFIG.logger.error(
+                `Unable to add armor (${w.ItemKey}) to character.`,
+                err
+              );
             }
-          } catch (err) {
-            CONFIG.logger.error(`Unable to add armor (${w.ItemKey}) to character.`, err);
           }
-        });
+        );
       }
 
       updateDialog(70);
 
       if (characterData.Character?.Gear?.CharGear) {
         if (!Array.isArray(characterData.Character.Gear.CharGear)) {
-          characterData.Character.Gear.CharGear = [characterData.Character.Gear.CharGear];
+          characterData.Character.Gear.CharGear = [
+            characterData.Character.Gear.CharGear,
+          ];
         }
-        await this.asyncForEach(characterData.Character.Gear.CharGear, async (w) => {
-          try {
-            const gear = JSON.parse(JSON.stringify(await this.findCompendiumEntityByImportId("Item", w.ItemKey, undefined, "gear")));
-            delete gear._id;
+        await this.asyncForEach(
+          characterData.Character.Gear.CharGear,
+          async (w) => {
+            try {
+              const gear = JSON.parse(
+                JSON.stringify(
+                  await this.findCompendiumEntityByImportId(
+                    "Item",
+                    w.ItemKey,
+                    undefined,
+                    "gear"
+                  )
+                )
+              );
+              delete gear._id;
 
-            let gearItem = character.items.find((s) => s.flags.ffgimportid === gear.flags.ffgimportid);
+              let gearItem = character.items.find(
+                (s) => s.flags.ffgimportid === gear.flags.ffgimportid
+              );
 
-            let gearCount = 1;
-            if (w?.Count) {
-              gearCount = parseInt(w.Count, 10);
-              gear.data.quantity = {
-                value: gearCount,
-              };
+              let gearCount = 1;
+              if (w?.Count) {
+                gearCount = parseInt(w.Count, 10);
+                gear.data.quantity = {
+                  value: gearCount,
+                };
+              }
+
+              if (gearItem) {
+                gearItem = mergeObject(gear, gearItem);
+                gear.data.quantity.value = gearCount;
+              } else {
+                character.items.push(gear);
+              }
+            } catch (err) {
+              CONFIG.logger.error(
+                `Unable to add gear (${w.ItemKey}) to character.`,
+                err
+              );
             }
-
-            if (gearItem) {
-              gearItem = mergeObject(gear, gearItem);
-              gear.data.quantity.value = gearCount;
-            } else {
-              character.items.push(gear);
-            }
-          } catch (err) {
-            CONFIG.logger.error(`Unable to add gear (${w.ItemKey}) to character.`, err);
           }
-        });
+        );
       }
 
       updateDialog(80);
@@ -2027,7 +2532,9 @@ export default class ImportHelpers {
         const imge = characterData.Character.Portrait;
         if (imge) {
           const img = this.b64toBlob(imge);
-          const i = new File([img], `${characterData.Character.Key}.png`, { type: "image/png" });
+          const i = new File([img], `${characterData.Character.Key}.png`, {
+            type: "image/png",
+          });
           await Helpers.UploadFile("data", serverPath, i, { bucket: null });
           character.img = `${serverPath}/${characterData.Character.Key}.png`;
         }
@@ -2177,7 +2684,11 @@ export default class ImportHelpers {
   }
 
   static async addImportItemToCompendium(type, data, pack, removeFirst) {
-    let entry = await ImportHelpers.findCompendiumEntityByImportId(type, data.flags.ffgimportid, pack.collection);
+    let entry = await ImportHelpers.findCompendiumEntityByImportId(
+      type,
+      data.flags.ffgimportid,
+      pack.collection
+    );
     let objClass;
     let dataType;
     switch (type) {
@@ -2206,20 +2717,34 @@ export default class ImportHelpers {
       CONFIG.logger.debug(`Importing ${type} ${dataType} ${data.name}`);
       switch (type) {
         case "Item":
-          compendiumItem = await new CONFIG.Item.documentClass(data, { temporary: true });
+          compendiumItem = await new CONFIG.Item.documentClass(data, {
+            temporary: true,
+          });
           break;
         case "Actor":
-          compendiumItem = await new CONFIG.Actor.documentClass(data, { temporary: true });
+          compendiumItem = await new CONFIG.Actor.documentClass(data, {
+            temporary: true,
+          });
           break;
         case "JournalEntry":
-          compendiumItem = await new CONFIG.JournalEntry.documentClass(data, { temporary: true });
+          compendiumItem = await new CONFIG.JournalEntry.documentClass(data, {
+            temporary: true,
+          });
           break;
         default:
-          CONFIG.logger.error(`Unable to import item type ${type}, unhandled type.`);
+          CONFIG.logger.error(
+            `Unable to import item type ${type}, unhandled type.`
+          );
       }
-      CONFIG.logger.debug(`New ${type} ${dataType} ${data.name} : ${JSON.stringify(compendiumItem)}`);
+      CONFIG.logger.debug(
+        `New ${type} ${dataType} ${data.name} : ${JSON.stringify(
+          compendiumItem
+        )}`
+      );
       const crt = await pack.importDocument(compendiumItem);
-      CONFIG.temporary[pack.collection][data.flags.ffgimportid] = duplicate(crt);
+      CONFIG.temporary[pack.collection][data.flags.ffgimportid] = duplicate(
+        crt
+      );
     } else {
       let upd;
       if (removeFirst) {
@@ -2228,18 +2753,30 @@ export default class ImportHelpers {
         CONFIG.logger.debug(`Importing ${type} ${dataType} ${data.name}`);
         switch (type) {
           case "Item":
-            compendiumItem = await new CONFIG.Item.documentClass(data, { temporary: true });
+            compendiumItem = await new CONFIG.Item.documentClass(data, {
+              temporary: true,
+            });
             break;
           case "Actor":
-            compendiumItem = await new CONFIG.Actor.documentClass(data, { temporary: true });
+            compendiumItem = await new CONFIG.Actor.documentClass(data, {
+              temporary: true,
+            });
             break;
           case "JournalEntry":
-            compendiumItem = await new CONFIG.JournalEntry.documentClass(data, { temporary: true });
+            compendiumItem = await new CONFIG.JournalEntry.documentClass(data, {
+              temporary: true,
+            });
             break;
           default:
-            CONFIG.logger.error(`Unable to import item type ${type}, unhandled type.`);
+            CONFIG.logger.error(
+              `Unable to import item type ${type}, unhandled type.`
+            );
         }
-        CONFIG.logger.debug(`New ${type} ${dataType} ${data.name} : ${JSON.stringify(compendiumItem)}`);
+        CONFIG.logger.debug(
+          `New ${type} ${dataType} ${data.name} : ${JSON.stringify(
+            compendiumItem
+          )}`
+        );
         upd = await pack.importDocument(compendiumItem);
       } else {
         CONFIG.logger.debug(`Updating ${type} ${dataType} ${data.name}`);
@@ -2251,12 +2788,17 @@ export default class ImportHelpers {
           // Remove and repopulate all modifiers
           if (entry.data?.attributes) {
             for (let k of Object.keys(entry.data.attributes)) {
-              if (!updateData.data.attributes.hasOwnProperty(k)) updateData.data.attributes[`-=${k}`] = null;
+              if (!updateData.data.attributes.hasOwnProperty(k))
+                updateData.data.attributes[`-=${k}`] = null;
             }
           }
         }
 
-        CONFIG.logger.debug(`Updating ${type} ${dataType} ${data.name} : ${JSON.stringify(updateData)}`);
+        CONFIG.logger.debug(
+          `Updating ${type} ${dataType} ${data.name} : ${JSON.stringify(
+            updateData
+          )}`
+        );
         await pack.get(updateData._id)?.update(updateData);
         upd = duplicate(entry);
         if (upd.data) {
@@ -2269,11 +2811,15 @@ export default class ImportHelpers {
 
   static async getCompendiumPack(type, name) {
     CONFIG.logger.debug(`Checking for existing compendium pack ${name}`);
-    const searchName = "world." + name.toString().replaceAll(".", "").toLowerCase();
+    const searchName =
+      "world." + name.toString().replaceAll(".", "").toLowerCase();
     let pack = game.packs.get(searchName);
     if (!pack) {
       CONFIG.logger.debug(`Compendium pack ${name} not found, creating new`);
-      pack = await CompendiumCollection.createCompendium({ entity: type, label: name });
+      pack = await CompendiumCollection.createCompendium({
+        entity: type,
+        label: name,
+      });
     } else {
       CONFIG.logger.debug(`Existing compendium pack ${name} found`);
     }
@@ -2314,7 +2860,16 @@ export default class ImportHelpers {
     } else {
       if (mod.SkillIsCareer) {
         modtype = "Career Skill";
-      } else if (mod.BoostCount || mod.SetbackCount || mod.AddSetbackCount || mod.ForceCount || mod.AdvantageCount || mod.ThreatCount || mod.SuccessCount || mod.FailureCount) {
+      } else if (
+        mod.BoostCount ||
+        mod.SetbackCount ||
+        mod.AddSetbackCount ||
+        mod.ForceCount ||
+        mod.AdvantageCount ||
+        mod.ThreatCount ||
+        mod.SuccessCount ||
+        mod.FailureCount
+      ) {
         modtype = "Skill Boost";
 
         if (mod.AddSetbackCount) {
@@ -2380,41 +2935,65 @@ export default class ImportHelpers {
         return;
       } else if (dieMod.SkillKey) {
         // this is a skill modifier
-        const skillModifier = ImportHelpers.processSkillMod({ Key: dieMod.SkillKey, ...dieMod });
+        const skillModifier = ImportHelpers.processSkillMod({
+          Key: dieMod.SkillKey,
+          ...dieMod,
+        });
         output.attributes[skillModifier.type] = skillModifier.value;
       } else if (dieMod.SkillChar) {
         // this is a skill modifier based on characteristic (ex all Brawn skills);
         const skillTheme = await game.settings.get("starwarsffg", "skilltheme");
-        const allSkillsLists = JSON.parse(await game.settings.get("starwarsffg", "arraySkillList"));
+        const allSkillsLists = JSON.parse(
+          await game.settings.get("starwarsffg", "arraySkillList")
+        );
         const skills = allSkillsLists.find((i) => i.id === skillTheme).skills;
-        const characteristicSkills = Object.keys(skills).filter((s) => skills[s].characteristic === ImportHelpers.convertOGCharacteristic(dieMod.SkillChar));
+        const characteristicSkills = Object.keys(skills).filter(
+          (s) =>
+            skills[s].characteristic ===
+            ImportHelpers.convertOGCharacteristic(dieMod.SkillChar)
+        );
 
         characteristicSkills.forEach((cs) => {
-          const skillModifier = ImportHelpers.processSkillMod({ Skill: cs, ...dieMod });
+          const skillModifier = ImportHelpers.processSkillMod({
+            Skill: cs,
+            ...dieMod,
+          });
 
           if (output.attributes[skillModifier.type]) {
-            output.attributes[skillModifier.type].value += skillModifier.value.value;
+            output.attributes[skillModifier.type].value +=
+              skillModifier.value.value;
           } else {
             output.attributes[skillModifier.type] = skillModifier.value;
           }
         });
       } else if (dieMod.SkillType) {
         const skillTheme = await game.settings.get("starwarsffg", "skilltheme");
-        const allSkillsLists = JSON.parse(await game.settings.get("starwarsffg", "arraySkillList"));
+        const allSkillsLists = JSON.parse(
+          await game.settings.get("starwarsffg", "arraySkillList")
+        );
         const skills = allSkillsLists.find((i) => i.id === skillTheme).skills;
-        const characteristicSkills = Object.keys(skills).filter((s) => skills[s].type.toLowerCase() === dieMod.SkillType.toLowerCase());
+        const characteristicSkills = Object.keys(skills).filter(
+          (s) => skills[s].type.toLowerCase() === dieMod.SkillType.toLowerCase()
+        );
 
         characteristicSkills.forEach((cs) => {
-          const skillModifier = ImportHelpers.processSkillMod({ Skill: cs, ...dieMod });
+          const skillModifier = ImportHelpers.processSkillMod({
+            Skill: cs,
+            ...dieMod,
+          });
 
           if (output.attributes[skillModifier.type]) {
-            output.attributes[skillModifier.type].value += skillModifier.value.value;
+            output.attributes[skillModifier.type].value +=
+              skillModifier.value.value;
           } else {
             output.attributes[skillModifier.type] = skillModifier.value;
           }
         });
       } else {
-        const skillModifier = ImportHelpers.processSkillMod({ Key: dieMod.SkillKey, ...dieMod }, true);
+        const skillModifier = ImportHelpers.processSkillMod(
+          { Key: dieMod.SkillKey, ...dieMod },
+          true
+        );
         output.attributes[skillModifier.type] = skillModifier.value;
       }
     });
@@ -2454,20 +3033,29 @@ export default class ImportHelpers {
 
             output.attributes[attribute.type] = attribute.value;
           } else {
-            const compendiumEntry = await ImportHelpers.findCompendiumEntityByImportId("Item", modifier.Key);
+            const compendiumEntry = await ImportHelpers.findCompendiumEntityByImportId(
+              "Item",
+              modifier.Key
+            );
             if (compendiumEntry) {
               if (compendiumEntry?.type === "itemmodifier") {
                 const descriptor = duplicate(compendiumEntry);
                 descriptor.id = randomID();
-                descriptor.data.rank = modifier?.Count ? parseInt(modifier.Count, 10) : 1;
+                descriptor.data.rank = modifier?.Count
+                  ? parseInt(modifier.Count, 10)
+                  : 1;
                 output.itemmodifier.push(descriptor);
                 let rank = "";
                 if (descriptor.data.rank > 1) {
-                  rank = `${game.i18n.localize("SWFFG.Count")} ${descriptor.data.rank}`;
+                  rank = `${game.i18n.localize("SWFFG.Count")} ${
+                    descriptor.data.rank
+                  }`;
                 }
                 output.description += `<div>${descriptor.name} - ${descriptor.data.description} ${rank}</div>`;
               }
-            } else if (Object.keys(CONFIG.temporary.skills).includes(modifier.Key)) {
+            } else if (
+              Object.keys(CONFIG.temporary.skills).includes(modifier.Key)
+            ) {
               // this is a skill upgrade
               const skillModifier = ImportHelpers.processSkillMod(modifier);
               if (skillModifier) {
@@ -2479,8 +3067,13 @@ export default class ImportHelpers {
           }
         } else if (modifier.DieModifiers) {
           // this is a die modifier
-          const dieModifiers = await ImportHelpers.processDieMod(modifier.DieModifiers);
-          output.attributes = mergeObject(output.attributes, dieModifiers.attributes);
+          const dieModifiers = await ImportHelpers.processDieMod(
+            modifier.DieModifiers
+          );
+          output.attributes = mergeObject(
+            output.attributes,
+            dieModifiers.attributes
+          );
         } else {
           // this is just a text modifier
           const unique = {
@@ -2589,14 +3182,22 @@ export default class ImportHelpers {
               attributes[randomID()] = { mod, modtype, value: true };
 
               if (includeRank) {
-                attributes[randomID()] = { mod, modtype: "Skill Rank", value: 0 };
+                attributes[randomID()] = {
+                  mod,
+                  modtype: "Skill Rank",
+                  value: 0,
+                };
               }
             } else {
-              CONFIG.logger.warn(`Skill ${skill} was not found in the current skills list.`);
+              CONFIG.logger.warn(
+                `Skill ${skill} was not found in the current skills list.`
+              );
             }
           }
         } else {
-          CONFIG.logger.warn(`Skill ${skill} was not found in the current skills list.`);
+          CONFIG.logger.warn(
+            `Skill ${skill} was not found in the current skills list.`
+          );
         }
       });
     }

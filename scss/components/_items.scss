@@ -1,3 +1,4 @@
+@import "../theme-variables.scss";
 .items {
   margin: 0;
   padding: 0;
@@ -53,6 +54,11 @@
       text-align: center;
       &:hover {
         background: rgba(25, 24, 19, 0.12);
+        .item-name {
+          .open-description-icons {
+            opacity: 1;
+          }
+        }
       }
       img {
         flex: 0 0 24px;
@@ -65,6 +71,21 @@
       flex: 1 0 120px;
       text-align: left;
       display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+
+      &:hover,
+      &:focus {
+        .open-description-icons {
+          opacity: 1;
+        }
+      }
+
+      .open-description-icons {
+        opacity: 0;
+        transition: opacity 0.3s ease-out;
+      }
     }
     .item-controls {
       z-index: 500;
@@ -124,7 +145,7 @@
       background-position: center;
     }
   }
-} 
+}
 
 &.item-card {
   .item-details {
@@ -141,7 +162,12 @@
         font-size: 12px;
         line-height: 20px;
         white-space: nowrap;
-    
+        opacity: $low-opacity;
+        transition: opacity 0.3s ease-out;
+        &:hover,
+        :focus {
+          opacity: 1;
+        }
         &.adjusted {
           color: #8b0000;
         }

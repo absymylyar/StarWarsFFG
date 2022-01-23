@@ -7,9 +7,10 @@
 
   <ul class="talent-list">
     {{#each items as |item id|}} {{#iff item.type '==' 'forcepower'}}
-    <li class="item flexrow forcepower" data-item-id="{{item._id}}">
+    <li class="item flexrow forcepower" data-item-id="{{item._id}}" data-key="{{item.flags.ffgimportid}}">
       <div class="item-name">
-        {{item.name}}
+        <span>{{item.name}}</span>
+        <div class="open-description-icons fp-name"><a class="api-dialog"><i class="fas fa-eye"></i></a><i class="fas fa-spinner fa-spin visibility-hidden"></i></div>
       </div>
       <div class="force-powers">
         <ul>
@@ -19,8 +20,11 @@
           </li>
           <ul class="items-list">
             {{#each item.powerUpgrades as |upgrade name|}}
-            <li class="force-power flexrow" data-item-id="{{item._id}}" data-desc="{{upgrade.description}}" data-upgrade-name="{{upgrade.name}}">
-              <div class="item-name">{{upgrade.name}}</div>
+            <li class="force-power flexrow" data-item-id="{{item._id}}" data-key="{{upgrade.ftKey}}" data-desc="{{upgrade.description}}" data-upgrade-name="{{upgrade.name}}">
+              <div class="item-name">
+                <span>{{upgrade.name}}</span>
+                <div class="open-description-icons upgrade-name"><a class="api-dialog"><i class="fas fa-eye"></i></a><i class="fas fa-spinner fa-spin visibility-hidden"></i></div>
+              </div>
               <div>{{upgrade.rank}}</div>
             </li>
             {{/each}}

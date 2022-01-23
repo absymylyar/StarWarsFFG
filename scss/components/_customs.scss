@@ -1,9 +1,10 @@
+@import "../theme-variables.scss";
 .open-description-icons {
   display: flex;
   flex-direction: row;
   align-items: center;
   > :not(:first-child) {
-    margin-left: 8px;
+    margin-left: $small-space;
   }
   .visibility-hidden {
     display: none;
@@ -14,9 +15,9 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding-right: 8px;
+  padding-right: $small-space;
   > :not(:first-child) {
-    margin-left: 4px;
+    margin-left: $tiny-space;
   }
   &:hover,
   &:focus {
@@ -29,12 +30,56 @@
     transition: opacity 0.3s ease-out;
   }
 }
-.item-controls{
+.item-controls {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
-  >:not(:first-child){
-    margin-left: 8px;
+  > :not(:first-child) {
+    margin-left: $small-space;
+  }
+}
+.buttons-container {
+  position: relative;
+  .inner {
+    position: relative;
+    width: 100%;
+  }
+  &:hover,
+  &:focus {
+    box-shadow: none;
+    text-decoration: none;
+    cursor: pointer;
+    .buttons {
+      opacity: 1;
+      padding-right: 16px;
+    }
+  }
+  .buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    :not(:first-child) {
+      margin-left: $medium-space;
+    }
+    border-radius: $border-radius-main;
+    padding-right: $large-space;
+    position: absolute;
+    opacity: 0;
+    right: 0;
+    top: 0;
+    width: 100%;
+    height: calc(100% - 4px);
+    background-color: $white-color;
+    background: linear-gradient(
+      270deg,
+      $gray-500 60.38%,
+      rgba(245, 240, 235, 0) 100%
+    );
+    z-index: 100;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    transition: all 0.3s ease-out;
   }
 }

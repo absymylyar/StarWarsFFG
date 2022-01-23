@@ -1,3 +1,4 @@
+@import "../theme-variables.scss";
 &.sheet {
   &.item {
     .popout-editor {
@@ -5,12 +6,12 @@
       width: 215px;
     }
     .tab[data-tab].active {
-      height:100%;
+      height: 100%;
     }
     .tabs {
-      height : 20px;
+      height: 20px;
       border: 0;
-      
+
       .item {
         line-height: 15px;
       }
@@ -20,18 +21,18 @@
       .characteristic-value {
         &.restricted {
           &::after {
-            content: 'R';
+            content: "R";
             position: absolute;
             font-size: 15px;
             left: 1px;
             top: -1px;
-            color: #8b0000;;
+            color: #8b0000;
           }
         }
       }
     }
   }
- 
+
   .window-content {
     overflow-y: hidden;
   }
@@ -44,15 +45,15 @@
   .item-pill-list {
     padding: 0;
     &:after {
-      content:".";
-      display:block;
-      height:0;
-      clear:both;
-      visibility:hidden;
+      content: ".";
+      display: block;
+      height: 0;
+      clear: both;
+      visibility: hidden;
     }
   }
 
-  .item-pill {
+  .item-quality {
     list-style-type: none;
     padding: 0 5px;
     background-color: #aaa;
@@ -68,14 +69,51 @@
     &.adjusted {
       color: #8b0000;
     }
-    
+
     .rank {
       padding-right: 15px;
       &:hover {
         color: green;
       }
     }
-  
+
+    .item-delete {
+      cursor: pointer;
+      &:hover {
+        color: red;
+      }
+    }
+  }
+  .item-pill {
+    list-style-type: none;
+    padding: 0 5px;
+    background-color: #aaa;
+    border: 1px solid black;
+    border-radius: 12px;
+    float: left;
+    margin: 1px;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 20px;
+    white-space: nowrap;
+    opacity: $low-opacity;
+    transition: opacity 0.3s ease-out;
+    &:hover,
+    :focus {
+      opacity: 1;
+    }
+
+    &.adjusted {
+      color: #8b0000;
+    }
+
+    .rank {
+      padding-right: 15px;
+      &:hover {
+        color: green;
+      }
+    }
+
     .item-delete {
       cursor: pointer;
       &:hover {
@@ -93,7 +131,7 @@
   &.item {
     &.v2 {
       .sheet-body {
-        margin : 0px 5px;
+        margin: 0px 5px;
       }
       .tabs {
         .item {

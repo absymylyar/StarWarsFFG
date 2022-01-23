@@ -1,4 +1,4 @@
-const api_uri = "https://localhost:44325/graphql";
+const api_uri = "http://176.140.9.235:80/graphql";
 const POST = "POST";
 const content_type = "application/json";
 const accept = "application/json";
@@ -14,19 +14,41 @@ export function configureApiItemDialog(html, data) {
   }
 }
 export function configureCharacterTalentApiDialog(elem) {
-  const key = elem.dataset["key"];
-  const eye = $(elem.querySelector(".api-dialog"));
-  const cog = $(elem.querySelector(".fa-spinner"));
-  const type = "talent";
-  if (eye && cog && key) {
-    showApiItemDialog(eye, cog, key, type);
-  }
+  configureCharacterItemsApiDialog(elem, "talent");
+}
+export function configureCharacterForcePowerApiDialog(elem) {
+  configureCharacterItemsApiDialog(elem, "force-power");
+}
+export function configureCharacterUpGradePowerApiDialog(elem) {
+  configureCharacterItemsApiDialog(elem, "upgrade-power");
 }
 export function configureCharacterSkillApiDialog(elem) {
+  configureCharacterItemsApiDialog(elem, "skill");
+}
+export async function configureEffectApiDialog(elem) {
   const key = elem.dataset["key"];
   const eye = $(elem.querySelector(".api-dialog"));
   const cog = $(elem.querySelector(".fa-spinner"));
-  const type = "skill";
+  const apiData = await getApiData(key, "effect", "fr");
+  const d = new Dialog({
+    title: apiData.name,
+    content: apiData.description,
+    buttons: {
+      one: {
+        icon: '<i class="fas fa-check"></i>',
+        callback: () => d.close(),
+      },
+    },
+    default: "one",
+  });
+  d.render(true);
+  $(eye).removeClass("visibility-hidden");
+  $(cog).addClass("visibility-hidden");
+}
+function configureCharacterItemsApiDialog(elem, type) {
+  const key = elem.dataset["key"];
+  const eye = $(elem.querySelector(".api-dialog"));
+  const cog = $(elem.querySelector(".fa-spinner"));
   if (eye && cog && key) {
     showApiItemDialog(eye, cog, key, type);
   }
@@ -39,11 +61,10 @@ function showApiItemDialog(eye, cog, key, type, language = "fr") {
       if (cog) {
         $(cog).removeClass("visibility-hidden");
       }
-      // const apiTalent = await getTalent(key, language);
-      const apiTalent = await getApiData(key, type, language);
+      const apiData = await getApiData(key, type, language);
       const d = new Dialog({
-        title: apiTalent.name,
-        content: apiTalent.description,
+        title: apiData.name,
+        content: apiData.description,
         buttons: {
           one: {
             icon: '<i class="fas fa-check"></i>',
@@ -72,13 +93,82 @@ async function getApiDataCall(key, type, language = "fr") {
       return getTalent(key, language);
     case "skill":
       return getSkill(key, language);
-
+    case "force-power":
+      return getForcePower(key, language);
+    case "upgrade-power":
+      return getUpGradePower(key, language);
+    case "effect":
+      return getEffect(key, language);
     default:
       break;
   }
 }
+async function getEffect(key, language = "fr") {
+  const effect_graph = `
+  query GetEffect($key: String!, $language: String!) {
+    datas: effects(where: { key: $key, language: $language }) {
+      name
+      description
+      id
+      language
+      key
+    }
+  }
+`;
+  return getItem(effect_graph, key, language);
+}
+async function getUpGradePower(key, language = "fr") {
+  const upgrade_power_graph = `
+  query GetPowerUpGrade($key: String!, $language: String!) {
+    datas:powerUpgrades(where: { key: $key, language: $language }) {
+      name
+      description
+      id
+      language
+      key
+    }
+  }
+`;
+  return getItem(upgrade_power_graph, key, language);
+}
+async function getForcePower(key, language = "fr") {
+  const force_power_graph = `
+  query GetForcePower($fkey: String!, $ukey: String!, $language: String!) {
+    fp: forcePowers(where: { key: $fkey, language: $language }) {
+      name
+      description
+      id
+      language
+      key
+    }
+    up: powerUpgrades(where: { key: $ukey, language: $language }) {
+      name
+      description
+      id
+      language
+      key
+    }
+  }
+`;
+  return fetch(api_uri, {
+    method: POST,
+    headers: {
+      "Content-Type": content_type,
+      Accept: accept,
+    },
+    body: JSON.stringify({
+      query: force_power_graph,
+      variables: { fkey: key, ukey: key + "BASIC", language },
+    }),
+  })
+    .then((r) => r.json())
+    .then(
+      (data) =>
+        data.data.fp && data.data.fp[0] + data.data.up && data.data.up[0]
+    );
+}
 async function getSkill(key, language = "fr") {
-  const talent_graph = `
+  const skill_graph = `
 query GetSkill($key: String!, $language: String!) {
   datas:skills(where: { key: $key, language: $language }) {
     name
@@ -89,7 +179,7 @@ query GetSkill($key: String!, $language: String!) {
   }
 }
 `;
-  return getItem(talent_graph, key, language);
+  return getItem(skill_graph, key, language);
 }
 async function getTalent(key, language = "fr") {
   const talent_graph = `
