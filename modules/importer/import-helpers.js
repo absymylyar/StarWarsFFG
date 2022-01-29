@@ -180,6 +180,9 @@ export default class ImportHelpers {
       }
     }
   }
+  static async getWeaponCompendium(){
+    
+  }
 
   /**
    * Find an entity by the import key.

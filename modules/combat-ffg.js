@@ -15,9 +15,15 @@ export class CombatFFG extends Combat {
     }
 
     if (formula === "Vigilance") {
-      formula = _getInitiativeFormula(cData.skills.Vigilance, parseInt(cData.characteristics.Willpower.value));
+      formula = _getInitiativeFormula(
+        cData.skills.Vigilance,
+        parseInt(cData.characteristics.Willpower.value)
+      );
     } else if (formula === "Cool") {
-      formula = _getInitiativeFormula(cData.skills.Cool, parseInt(cData.characteristics.Presence.value));
+      formula = _getInitiativeFormula(
+        cData.skills.Cool,
+        parseInt(cData.characteristics.Presence.value)
+      );
     }
 
     const rollData = combatant.actor ? combatant.actor.getRollData() : {};
@@ -36,8 +42,15 @@ export class CombatFFG extends Combat {
     return CONFIG.Combat.initiative.formula || game.system.data.initiative;
   }
 
+  getCombatant(id) {
+    return this.turns.find(({ data }) => data._id === id);
+  }
+
   /** @override */
-  async rollInitiative(ids, { formula = null, updateTurn = true, messageOptions = {} } = {}) {
+  async rollInitiative(
+    ids,
+    { formula = null, updateTurn = true, messageOptions = {} } = {}
+  ) {
     let initiative = this;
 
     let promise = new Promise(async function (resolve, reject) {
@@ -49,7 +62,8 @@ export class CombatFFG extends Combat {
       let coolDicePool = new DicePoolFFG({});
       let addDicePool = new DicePoolFFG({});
 
-      const defaultInitiativeFormula = formula || initiative._getInitiativeFormula();
+      const defaultInitiativeFormula =
+        formula || initiative._getInitiativeFormula();
       if (Array.isArray(ids) && ids.length > 1) {
         whosInitiative = "Multiple Combatants";
       } else {
@@ -62,7 +76,9 @@ export class CombatFFG extends Combat {
         vigilanceDicePool = _buildInitiativePool(data, "Vigilance");
         coolDicePool = _buildInitiativePool(data, "Cool");
 
-        const initSkills = Object.keys(data.skills).filter((skill) => data.skills[skill].useForInitiative);
+        const initSkills = Object.keys(data.skills).filter(
+          (skill) => data.skills[skill].useForInitiative
+        );
 
         initSkills.forEach((skill) => {
           if (dicePools.find((p) => p.name === skill)) return;
@@ -85,13 +101,17 @@ export class CombatFFG extends Combat {
         dicePools.push(coolDicePool);
       }
 
-      const title = game.i18n.localize("SWFFG.InitiativeRoll") + ` ${whosInitiative}...`;
-      const content = await renderTemplate("systems/starwarsffg/templates/dialogs/ffg-initiative.html", {
-        id,
-        dicePools,
-        addDicePool,
-        defaultInitiativeFormula,
-      });
+      const title =
+        game.i18n.localize("SWFFG.InitiativeRoll") + ` ${whosInitiative}...`;
+      const content = await renderTemplate(
+        "systems/starwarsffg/templates/dialogs/ffg-initiative.html",
+        {
+          id,
+          dicePools,
+          addDicePool,
+          defaultInitiativeFormula,
+        }
+      );
 
       new Dialog({
         title,
@@ -104,7 +124,9 @@ export class CombatFFG extends Combat {
               const container = document.getElementById(id);
               const currentId = initiative.combatant.id;
 
-              const baseFormulaType = container.querySelector('input[name="skill"]:checked').value;
+              const baseFormulaType = container.querySelector(
+                'input[name="skill"]:checked'
+              ).value;
 
               // Iterate over Combatants, performing an initiative roll for each
               const [updates, messages] = ids.reduce(
@@ -112,13 +134,18 @@ export class CombatFFG extends Combat {
                   let [updates, messages] = results;
 
                   // Get Combatant data
-                  const c = initiative.getCombatant(id);
+                  const c = initiative.getEmbeddedDocument("Combatant", id);
                   if (!c || !c.isOwner) return resolve(results);
 
                   // Detemine Formula
-                  let pool = _buildInitiativePool(c.actor.data.data, baseFormulaType);
+                  let pool = _buildInitiativePool(
+                    c.actor.data.data,
+                    baseFormulaType
+                  );
 
-                  const addPool = DicePoolFFG.fromContainer(container.querySelector(`.addDicePool`));
+                  const addPool = DicePoolFFG.fromContainer(
+                    container.querySelector(`.addDicePool`)
+                  );
                   pool.success += +addPool.success;
                   pool.advantage += +addPool.advantage;
                   pool.failure += +addPool.failure;
@@ -127,7 +154,16 @@ export class CombatFFG extends Combat {
                   pool.setback += +addPool.setback;
 
                   const rollData = c.actor ? c.actor.getRollData() : {};
-                  let roll = new RollFFG(pool.renderDiceExpression(), rollData, { success: pool.success, advantage: pool.advantage, failure: pool.failure, threat: pool.threat }).roll();
+                  let roll = new RollFFG(
+                    pool.renderDiceExpression(),
+                    rollData,
+                    {
+                      success: pool.success,
+                      advantage: pool.advantage,
+                      failure: pool.failure,
+                      threat: pool.threat,
+                    }
+                  ).roll();
                   const total = roll.ffg.success + roll.ffg.advantage * 0.01;
                   roll._result = total;
                   roll._total = total;
@@ -136,8 +172,11 @@ export class CombatFFG extends Combat {
                   updates.push({ _id: id, initiative: roll.total });
 
                   // Determine the roll mode
-                  let rollMode = messageOptions.rollMode || game.settings.get("core", "rollMode");
-                  if ((c.token.hidden || c.hidden) && rollMode === "roll") rollMode = "gmroll";
+                  let rollMode =
+                    messageOptions.rollMode ||
+                    game.settings.get("core", "rollMode");
+                  if ((c.token.hidden || c.hidden) && rollMode === "roll")
+                    rollMode = "gmroll";
 
                   // Construct chat message data
                   let messageData = mergeObject(
@@ -148,12 +187,22 @@ export class CombatFFG extends Combat {
                         token: c.token.id,
                         alias: c.token.name,
                       },
-                      flavor: `${c.token.name} ${game.i18n.localize("SWFFG.InitiativeRoll")} (${game.i18n.localize(`SWFFG.SkillsName${baseFormulaType.replace(/[: ]/g, "")}`)})`,
+                      flavor: `${c.token.name} ${game.i18n.localize(
+                        "SWFFG.InitiativeRoll"
+                      )} (${game.i18n.localize(
+                        `SWFFG.SkillsName${baseFormulaType.replace(
+                          /[: ]/g,
+                          ""
+                        )}`
+                      )})`,
                       flags: { "core.initiativeRoll": true },
                     },
                     messageOptions
                   );
-                  const chatData = roll.toMessage(messageData, { create: false, rollMode });
+                  const chatData = roll.toMessage(messageData, {
+                    create: false,
+                    rollMode,
+                  });
 
                   // Play 1 sound for the whole rolled set
                   if (i > 0) chatData.sound = null;
@@ -167,11 +216,13 @@ export class CombatFFG extends Combat {
               if (!updates.length) return initiative;
 
               // Update multiple combatants
-              await initiative.updateEmbeddedEntity("Combatant", updates);
+              await initiative.updateEmbeddedDocuments("Combatant", updates);
 
               // Ensure the turn order remains with the same combatant
               if (updateTurn) {
-                await initiative.update({ turn: initiative.turns.findIndex((t) => t.id === currentId) });
+                await initiative.update({
+                  turn: initiative.turns.findIndex((t) => t.id === currentId),
+                });
               }
 
               // Create multiple chat messages
@@ -205,12 +256,20 @@ function _getInitiativeFormula(skill, ability) {
 
 function _buildInitiativePool(data, skill) {
   const pool = new DicePoolFFG({
-    ability: Math.max(data.characteristics[data.skills[skill].characteristic].value, data.skills[skill].rank),
+    ability: Math.max(
+      data.characteristics[data.skills[skill].characteristic].value,
+      data.skills[skill].rank
+    ),
     boost: data.skills[skill].boost,
     advantage: data.skills[skill].advantage,
     success: data.skills[skill].success,
   });
-  pool.upgrade(Math.min(data.characteristics[data.skills[skill].characteristic].value, data.skills[skill].rank));
+  pool.upgrade(
+    Math.min(
+      data.characteristics[data.skills[skill].characteristic].value,
+      data.skills[skill].rank
+    )
+  );
 
   return pool;
 }
