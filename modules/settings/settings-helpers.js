@@ -282,6 +282,18 @@ export default class SettingsHelpers {
         return this.debouncedReload();
       },
     });
+
+
+    // Increase compatibility with old versions (likely to make new games kinda weird as it updates items from chat data)
+    game.settings.register("starwarsffg", "oldWorldCompatability", {
+      name: game.i18n.localize("SWFFG.OldWorld.CompatLabel"),
+      hint: game.i18n.localize("SWFFG.OldWorld.CompatHint"),
+      scope: "world",
+      config: true,
+      default: false,
+      type: Boolean,
+      onChange: this.debouncedReload,
+    });
   }
 
   // Initialize System Settings after the Ready Hook
@@ -300,7 +312,7 @@ export default class SettingsHelpers {
     const playlists = {};
     playlists["None"] = "";
     game.playlists.contents.forEach((playlist, index) => {
-      playlists[playlist.id] = `${index}-${playlist.data.name}`;
+      playlists[playlist.id] = `${index}-${playlist.name}`;
     });
 
     // Playlist users can user for audio
@@ -323,6 +335,20 @@ export default class SettingsHelpers {
       default: game.i18n.localize("SWFFG.DefaultMedicalItemName"),
       type: String,
       onChange: this.debouncedReload,
+    });
+
+    let stimpackChoices = [
+        game.i18n.localize("SWFFG.MedicalItemNameUsePrompt"),
+        game.i18n.localize("SWFFG.MedicalItemNameUseRest"),
+        game.i18n.localize("SWFFG.MedicalItemNameUseReset"),
+    ];
+    game.settings.register("starwarsffg", "HealingItemAction", {
+      name: game.i18n.localize("SWFFG.MedicalItemSetting"),
+      scope: "world",
+      default: '0',
+      config: true,
+      type: String,
+      choices: stimpackChoices,
     });
   }
 

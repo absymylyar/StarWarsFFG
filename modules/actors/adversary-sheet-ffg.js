@@ -20,13 +20,13 @@ export class AdversarySheetFFG extends ActorSheetFFG {
       width: 710,
       height: 650,
       tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "characteristics" }],
-      scrollY: [".tableWithHeader", ".tab"],
+      scrollY: [".tableWithHeader", ".tab", ".skillsGrid", ".skillsTablesGrid"],
     });
   }
 
   getData() {
     const data = super.getData();
-    switch (this.actor.data.type) {
+    switch (this.actor.type) {
       case "character":
         this.position.width = 595;
         this.position.height = 783;
@@ -35,7 +35,7 @@ export class AdversarySheetFFG extends ActorSheetFFG {
         }
 
         // we need to update all specialization talents with the latest talent information
-        if (!this.actor.data.flags.loaded) {
+        if (!this.actor.flags.starwarsffg?.loaded) {
           super._updateSpecialization(data);
         }
 
@@ -43,7 +43,7 @@ export class AdversarySheetFFG extends ActorSheetFFG {
       default:
     }
 
-    data.items = this.actor.items.map((item) => item.data);
+    data.items = this.actor.items.map((item) => item);
 
     return data;
   }
@@ -54,7 +54,7 @@ export class AdversarySheetFFG extends ActorSheetFFG {
 
     if (!this.options.editable) return;
 
-    if (this.actor.data.type === "character") {
+    if (this.actor.type === "character") {
       this.sheetoptions.clear();
       this.sheetoptions.register("enableAutoSoakCalculation", {
         name: game.i18n.localize("SWFFG.EnableSoakCalc"),
@@ -65,6 +65,12 @@ export class AdversarySheetFFG extends ActorSheetFFG {
       this.sheetoptions.register("enableForcePool", {
         name: game.i18n.localize("SWFFG.EnableForcePool"),
         hint: game.i18n.localize("SWFFG.EnableForcePoolHint"),
+        type: "Boolean",
+        default: true,
+      });
+      this.sheetoptions.register("enableStrainThreshold", {
+        name: game.i18n.localize("SWFFG.EnableStrainThreshold"),
+        hint: game.i18n.localize("SWFFG.EnableStrainThresholdHint"),
         type: "Boolean",
         default: true,
       });

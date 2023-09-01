@@ -346,9 +346,11 @@ img {
   height: 15px;
   margin-bottom: 10px;
   border: 0;
+  padding: 0;
 }
 .starwarsffg.sheet.actor .tabs .item {
   line-height: 15px;
+  padding: 0;
 }
 .starwarsffg.sheet.actor .characteristic-item .characteristic-label {
   background-color: #490c0b;
@@ -452,6 +454,11 @@ img {
 }
 .starwarsffg.sheet.actor .character .header-fields .row .row-input .specialization-pill .item-delete, .starwarsffg.sheet.actor .character .header-fields .row .row-input .species-pill .item-delete, .starwarsffg.sheet.actor .character .header-fields .row .row-input .career-pill .item-delete {
   cursor: pointer;
+}
+.starwarsffg.sheet.actor .character .header-fields .row .row-input .drag-note {
+  border: 2px dotted;
+  border-radius: 10px;
+  padding: 0 5px;
 }
 .starwarsffg.sheet.actor .character .header-fields .row input {
   width: 100%;
@@ -642,9 +649,11 @@ img {
 .starwarsffg.sheet.item .tabs {
   height: 20px;
   border: 0;
+  padding: 0;
 }
 .starwarsffg.sheet.item .tabs .item {
   line-height: 15px;
+  padding: 0;
 }
 .starwarsffg.sheet.item .characteristic .characteristic-value.restricted::after {
   content: "R";
@@ -1279,6 +1288,10 @@ img {
 }
 .starwarsffg .ffgDiceArray .dice-rolls .roll {
   width: 40px;
+  float: left;
+}
+.starwarsffg .dice-tooltip .dice-rolls .roll {
+  width: 24px;
   float: left;
 }
 .starwarsffg .dice-result .roll-success {
@@ -2223,6 +2236,20 @@ img {
 .starwarsffg.sheet.actor .vehicle .injuries .resource.full {
   width: 100%;
 }
+.starwarsffg.sheet.actor .homestead .sheet-header .homestead-img {
+  height: 20vmin;
+}
+.starwarsffg.sheet.actor .homestead .biography-values {
+  border: 0;
+}
+.starwarsffg.sheet.actor .homestead .sheet-body {
+  height: calc(100% - 28.875rem);
+  overflow: auto;
+}
+.starwarsffg.sheet.actor .homestead .sheet-body .biography {
+  height: calc(100% - 1.5rem);
+  overflow: auto;
+}
 .starwarsffg .item-sheet-vehicle-weapon .charname input {
   color: #1f1c37;
 }
@@ -2324,6 +2351,7 @@ img {
   height: calc(100% - 17.3125rem);
 }
 .starwarsffg .group-manager {
+  overflow-y: auto;
   font-family: Roboto, sans-serif;
   color: #222222;
   height: 100%;
@@ -2350,6 +2378,7 @@ img {
 .starwarsffg .hover:hover .tooltip2 {
   opacity: 1;
   z-index: 500;
+  pointer-events: none;
 }
 .starwarsffg .hover:focus .tooltip2 {
   opacity: 1;
@@ -2521,6 +2550,12 @@ img {
 }
 .starwarsffg .talent-list .item.forcepower #context-menu {
   max-width: none;
+}
+.starwarsffg .force-conflict {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  row-gap: 3px;
 }
 .starwarsffg.sheet.item .item-sheet-specialization .popout-editor {
   height: 100%;
@@ -2913,7 +2948,7 @@ img {
   display: inline-block;
 }
 #destiny-tracker .dropdown-content {
-  display: none;
+  display: contents;
   position: absolute;
   background: url(../../../ui/denim075.png) repeat;
   max-width: 50px;

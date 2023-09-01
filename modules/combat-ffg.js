@@ -8,9 +8,9 @@ import PopoutEditor from "./popout-editor.js";
 export class CombatFFG extends Combat {
   /** @override */
   _getInitiativeRoll(combatant, formula) {
-    const cData = duplicate(combatant.actor.data.data);
+    const cData = duplicate(combatant.actor.system);
 
-    if (combatant.actor.data.type === "vehicle") {
+    if (combatant.actor.type === "vehicle") {
       return new RollFFG("0");
     }
 
@@ -39,7 +39,7 @@ export class CombatFFG extends Combat {
 
   /** @override */
   _getInitiativeFormula(combatant) {
-    return CONFIG.Combat.initiative.formula || game.system.data.initiative;
+    return CONFIG.Combat.initiative.formula || game.system.initiative;
   }
 
   getCombatant(id) {
@@ -56,7 +56,7 @@ export class CombatFFG extends Combat {
     let promise = new Promise(async function (resolve, reject) {
       const id = randomID();
 
-      let whosInitiative = initiative.combatant.name;
+      let whosInitiative = initiative.combatant?.name;
       let dicePools = [];
       let vigilanceDicePool = new DicePoolFFG({});
       let coolDicePool = new DicePoolFFG({});
@@ -69,8 +69,11 @@ export class CombatFFG extends Combat {
       } else {
         // Make sure we are dealing with an array of ids
         ids = typeof ids === "string" ? [ids] : ids;
-        const c = initiative.getCombatant(ids[0]);
-        const data = c.actor.data.data;
+        const c = initiative.getCombatantByToken(
+            initiative.combatants.map(combatant => combatant)
+            .filter(combatantData => combatantData._id == ids[0])[0]
+            .tokenId);
+        const data = c.actor.system;
         whosInitiative = c.actor.name;
 
         vigilanceDicePool = _buildInitiativePool(data, "Vigilance");
@@ -119,29 +122,28 @@ export class CombatFFG extends Combat {
         buttons: {
           one: {
             icon: '<i class="fas fa-check"></i>',
-            label: game.i18n.localize("InitiativeRoll"),
+            label: game.i18n.localize("SWFFG.InitiativeRoll"),
             callback: async () => {
               const container = document.getElementById(id);
-              const currentId = initiative.combatant.id;
+              const currentId = initiative.combatant?.id;
 
               const baseFormulaType = container.querySelector(
                 'input[name="skill"]:checked'
               ).value;
 
               // Iterate over Combatants, performing an initiative roll for each
-              const [updates, messages] = ids.reduce(
-                (results, id, i) => {
-                  let [updates, messages] = results;
-
+              const [updates, messages] = await ids.reduce(
+                async (results, id, i) => {
+                  let [updates, messages] = await results;
                   // Get Combatant data
-                  const c = initiative.getEmbeddedDocument("Combatant", id);
+                  const c = initiative.getCombatantByToken(
+                    initiative.combatants.map(combatant => combatant)
+                    .filter(combatantData => combatantData._id == id)[0]
+                    .tokenId);
                   if (!c || !c.isOwner) return resolve(results);
 
                   // Detemine Formula
-                  let pool = _buildInitiativePool(
-                    c.actor.data.data,
-                    baseFormulaType
-                  );
+                  let pool = _buildInitiativePool(c.actor.system, baseFormulaType);
 
                   const addPool = DicePoolFFG.fromContainer(
                     container.querySelector(`.addDicePool`)
@@ -199,10 +201,7 @@ export class CombatFFG extends Combat {
                     },
                     messageOptions
                   );
-                  const chatData = roll.toMessage(messageData, {
-                    create: false,
-                    rollMode,
-                  });
+                  const chatData = await roll.toMessage(messageData, { create: false, rollMode });
 
                   // Play 1 sound for the whole rolled set
                   if (i > 0) chatData.sound = null;
@@ -218,11 +217,9 @@ export class CombatFFG extends Combat {
               // Update multiple combatants
               await initiative.updateEmbeddedDocuments("Combatant", updates);
 
-              // Ensure the turn order remains with the same combatant
-              if (updateTurn) {
-                await initiative.update({
-                  turn: initiative.turns.findIndex((t) => t.id === currentId),
-                });
+              // Ensure the turn order remains with the same combatant if there was one active
+              if (updateTurn && !!currentId) {
+                await initiative.update({ turn: initiative.turns.findIndex((t) => t.id === currentId) });
               }
 
               // Create multiple chat messages

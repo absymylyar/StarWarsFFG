@@ -1,12 +1,14 @@
 {
-  "name": "starwarsffg",
+  "id": "starwarsffg",
   "title": "Star Wars FFG",
   "description": "A system for playing Star Wars FFG games.",
-  "version": "1.6",
-  "minimumCoreVersion": "0.8.8",
-  "compatibleCoreVersion": "0.8.8",
+  "version": "1.801",
+  "compatibility": {
+    "minimum": 10,
+    "verified": 10
+  },
   "templateVersion": 1,
-  "author": "Esrin, CStadther and Jaxxa",
+  "authors": [{"name": "Esrin"}, {"name": "CStadther"}, {"name": "Wrycu"}, {"name": "Jaxxa"}],
   "esmodules": ["modules/dice-pool-ffg.js", "modules/swffg-main.js"],
   "styles": ["styles/starwarsffg.css", "lib/select2/select2.min.css", "lib/pure/grids-min.css"],
   "scripts": ["lib/select2/select2.min.js", "lib/jszip/jszip.min.js", "lib/jxon/jxon.min.js"],
@@ -32,6 +34,11 @@
       "lang": "es",
       "name": "Español (Spanish)",
       "path": "lang/es.json"
+    },
+    {
+      "lang": "pt-BR",
+      "name": "Português (BR)",
+      "path": "lang/pt-BR.json"
     }
   ],
   "gridDistance": 5,
@@ -39,7 +46,7 @@
   "primaryTokenAttribute": "wounds",
   "secondaryTokenAttribute": "strain",
   "url": "https://github.com/StarWarsFoundryVTT/StarWarsFFG",
-  "manifest": "https://raw.githubusercontent.com/StarWarsFoundryVTT/StarWarsFFG/master/system.json",
-  "download": "https://github.com/StarWarsFoundryVTT/StarWarsFFG/releases/download/v1.6/starwarsffg_1.6.zip",
+  "manifest": "https://github.com/StarWarsFoundryVTT/StarWarsFFG/releases/download/v1.801/system.json",
+  "download": "https://github.com/StarWarsFoundryVTT/StarWarsFFG/releases/download/v1.801/starwarsffg_1.801.zip",
   "license": "LICENSE.txt"
 }

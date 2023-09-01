@@ -55,10 +55,6 @@ section {
   background: #d8cbc0 url(../images/bgWindow.jpg) no-repeat;
 }
 
-.window-app .window-content form {
-  height: 100%;
-}
-
 .window-app.sheet.actor .window-content {
   background: #d8cbc0 url(../images/bgSheet.jpg) no-repeat;
 }
@@ -88,13 +84,6 @@ section {
   color: #000;
   text-shadow: 0 0 10px red;
   cursor: pointer;
-}
-
-input[type="checkbox"] {
-  height: auto;
-  margin: 0;
-  padding: 0;
-  line-height: 1rem;
 }
 
 #chat-log .message {
@@ -350,6 +339,12 @@ img {
   width: 100%;
   border: 0;
   background-color: rgba(0, 0, 0, 0);
+}
+
+.starwarsffg.sheet.actor .character .header-fields .row .row-input .drag-note {
+  border: 2px dotted;
+  border-radius: 10px;
+  padding: 0 5px;
 }
 
 .starwarsffg.sheet.actor .character .header-fields .header-name input:focus {
@@ -1563,9 +1558,10 @@ img {
 .starwarsffg .tabs .item {
   line-height: 1.5rem;
   height: 2rem;
+  width: 100%;
   background-color: #535d60;
   color: rgba(255, 255, 255, 0.9);
-  text-transform: Capitalise;
+  text-transform: uppercase;
   text-shadow: black 1px 2px 0;
   padding: 0.25rem;
   margin: 0 0.25rem;
@@ -1670,7 +1666,6 @@ img {
   border-radius: 0;
   font-family: "Elektra", sans-serif;
   font-size: 1rem;
-  text-transform: uppercase;
 }
 
 .starwarsffg .header-fields .header-name input:focus, .starwarsffg .header-fields .minion-name input:focus {
@@ -2991,6 +2986,9 @@ img {
 }
 
 .starwarsffg .group-manager {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
   font-family: Roboto, sans-serif;
   color: #222222;
   height: 100%;
@@ -3848,7 +3846,7 @@ img {
 }
 
 #destiny-tracker .dropdown-content {
-  display: none;
+  display: contents;
   position: absolute;
   background: url("../../../ui/denim075.png") repeat;
   max-width: 50px;

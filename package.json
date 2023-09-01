@@ -14,9 +14,7 @@
     "gulp-autoprefixer": "^8.0.0",
     "gulp-sourcemaps": "^3.0.0",
     "gulp-sass": "^5.1.0",
+    "sass": "^1.49.0",
     "prettier": "2.0.5"
-  },
-  "dependencies": {
-    "sass": "^1.48.0"
   }
 }
