@@ -59,20 +59,16 @@ export default class DiceHelpers {
     const actor = await game.actors.get(data.actor._id);
 
     // Determine if this roll is triggered by an item.
-    let item = {};
+    let item;
     if ($(row.parentElement).hasClass("item")) {
       //Check if token is linked to actor
       if (obj.actor.token === null) {
         let itemID = row.parentElement.dataset["itemId"];
-        const item1 = actor.items.get(itemID);
-        item = Object.entries(data.items).filter((item) => item[1]._id === itemID);
-        item = item[0][1];
-        item.flags.uuid = item1.uuid;
+        item = actor.items.get(itemID);
       } else {
         //Rolls this if unlinked
         let itemID = row.parentElement.dataset["itemId"];
-        item = obj.actor.token.actor.items.filter((i) => i.id === itemID);
-        item = item[0].data;
+        item = obj.actor.token.actor.items.get(itemID);
       }
     }
     const itemData = item || {};
@@ -105,8 +101,8 @@ export default class DiceHelpers {
       dicePool.upgradeDifficulty();
     }
 
-    dicePool = new DicePoolFFG(await this.getModifiers(dicePool, item));
-    this.displayRollDialog(data, dicePool, `${game.i18n.localize("SWFFG.Rolling")} ${game.i18n.localize(skill.label)}`, skill.label, item, flavorText, sound);
+    dicePool = new DicePoolFFG(await this.getModifiers(dicePool, itemData));
+    this.displayRollDialog(data, dicePool, `${game.i18n.localize("SWFFG.Rolling")} ${game.i18n.localize(skill.label)}`, skill.label, itemData, flavorText, sound);
   }
 
   static async displayRollDialog(data, dicePool, description, skillName, item, flavorText, sound) {

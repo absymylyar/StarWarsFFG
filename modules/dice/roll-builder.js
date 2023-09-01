@@ -39,7 +39,7 @@ export default class RollBuilderFFG extends FormApplication {
       game.playlists.contents.forEach((playlist) => {
         playlist.sounds.forEach((sound) => {
           let selected = false;
-          const s = this.roll?.sound ?? this.roll?.item?.flags?.ffgsound;
+          const s = this.roll?.sound ?? this.roll?.item?.flags?.starwarsffg?.ffgsound;
           if (s === sound.path) {
             selected = true;
           }
@@ -53,7 +53,7 @@ export default class RollBuilderFFG extends FormApplication {
       if (playlist) {
         playlist.sounds.forEach((sound) => {
           let selected = false;
-          const s = this.roll?.sound ?? this.roll?.item?.flags?.ffgsound;
+          const s = this.roll?.sound ?? this.roll?.item?.flags?.starwarsffg?.ffgsound;
           if (s === sound.path) {
             selected = true;
           }
@@ -157,7 +157,7 @@ export default class RollBuilderFFG extends FormApplication {
           user: game.user.id,
           content: messageText,
           flags: {
-            ffg: {
+            starwarsffg: {
               roll: this.roll,
               dicePool: this.dicePool,
               description: this.description,
@@ -181,7 +181,11 @@ export default class RollBuilderFFG extends FormApplication {
         }
         await roll.toMessage({
           user: game.user.id,
-          speaker: { actor: game.actors.get(this.roll.data?.actor?._id) },
+          speaker: {
+            actor: game.actors.get(this.roll.data?.actor?._id),
+            alias: this.roll.data?.token?.name,
+            token: this.roll.data?.token?._id,
+          },
           flavor: `${game.i18n.localize("SWFFG.Rolling")} ${game.i18n.localize(this.roll.skillName)}...`,
         });
         if (this.roll?.sound) {

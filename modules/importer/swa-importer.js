@@ -372,11 +372,13 @@ export default class SWAImporter extends FormApplication {
                   name: item.name,
                   type: item.type === "Nemesis" ? "character" : "minion",
                   flags: {
-                    ffgimportid: `${f.name}-${item.type}-${item.name}`,
-                    config: {
-                      enableAutoSoakCalculation: false,
-                      enableCriticalInjuries: item.type === "Minion" ? false : true,
-                    },
+                    starwarsffg: {
+                      ffgimportid: `${f.name}-${item.type}-${item.name}`,
+                      config: {
+                        enableAutoSoakCalculation: false,
+                        enableCriticalInjuries: item.type !== "Minion",
+                      }
+                    }
                   },
                   system: {
                     attributes: {},
@@ -788,9 +790,10 @@ export default class SWAImporter extends FormApplication {
                   CONFIG.logger.debug(`Update Adversary - Actor`);
                   //let updateData = ImportHelpers.buildUpdateData(item);
                   let updateData = adversary;
-                  updateData["_id"] = entry.id;
+                  updateData["_id"] = entry._id;
                   this._importLogger(`Updating talent ${name} : ${JSON.stringify(updateData)}`);
-                  await pack.get(updateData._id)?.update(updateData);
+                  let to_update = await pack.getDocument(updateData._id)
+                  to_update.update(updateData);
                 }
               } catch (err) {
                 CONFIG.logger.error(`Error importing ${item.name} from ${f.name}`, err);
@@ -855,7 +858,7 @@ export default class SWAImporter extends FormApplication {
     });
     if (!pack) {
       this._importLogger(`Compendium pack ${name} not found, creating new`);
-      pack = await CompendiumCollection.createCompendium({ entity: type, label: name });
+      pack = await CompendiumCollection.createCompendium({ type: type, label: name });
     } else {
       this._importLogger(`Existing compendium pack ${name} found`);
     }

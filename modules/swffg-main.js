@@ -87,7 +87,7 @@ Hooks.once("init", async function () {
   CONFIG.Dice.terms["a"] = AbilityDie;
   CONFIG.Dice.terms["b"] = BoostDie;
   CONFIG.Dice.terms["c"] = ChallengeDie;
-  CONFIG.Dice.terms["d"] = DifficultyDie;
+  CONFIG.Dice.terms["i"] = DifficultyDie;
   CONFIG.Dice.terms["f"] = ForceDie;
   CONFIG.Dice.terms["p"] = ProficiencyDie;
   CONFIG.Dice.terms["s"] = SetbackDie;
@@ -248,8 +248,8 @@ Hooks.once("init", async function () {
         });
 
         const sorted = Object.keys(skills).sort(function (a, b) {
-          const x = game.i18n.localize(skills[a].abrev);
-          const y = game.i18n.localize(skills[b].abrev);
+          const x = game.i18n.localize(skills[a].label);
+          const y = game.i18n.localize(skills[b].label);
 
           return x < y ? -1 : x > y ? 1 : 0;
         });
@@ -264,7 +264,6 @@ Hooks.once("init", async function () {
     } catch (err) {
       console.error(err);
     }
-
 
     Hooks.on("createActor", (actor) => {
       if (actor.type !== "vehicle" && actor.type !== "homestead") {
@@ -490,7 +489,7 @@ Hooks.on("renderChatMessage", (app, html, messageData) => {
   content[0].innerHTML = PopoutEditor.renderDiceImages(content[0].innerHTML);
 
   html.on("click", ".ffg-pool-to-player", () => {
-    const poolData = messageData.message.flags.ffg;
+    const poolData = messageData.message.flags.starwarsffg;
 
     const dicePool = new DicePoolFFG(poolData.dicePool);
 
@@ -776,7 +775,6 @@ Hooks.once("ready", async () => {
         CONFIG.logger.error(`Error during system migration`, err);
       }
     }
-
     game.settings.set("starwarsffg", "systemMigrationVersion", version);
   }
 
@@ -947,7 +945,7 @@ Hooks.once("diceSoNiceReady", (dice3d) => {
 
     dice3d.addDicePreset(
       {
-        type: "dd",
+        type: "di",
         labels: ["", "f", "f\nf", "h", "h", "h", "h\nh", "f\nh"],
         font: "Genesys",
         colorset: "purple",

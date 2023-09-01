@@ -106,11 +106,11 @@ export default class ItemHelpers {
               const ids = parent.id.split(".OwnedItem.");
               const actor = await fromUuid(ids[0]);
               const item = await actor.items.get(ids[1]);
-              spec.flags.loaded = false;
+              setProperty(updateData, `flags.starwarsffg.loaded`, false);
               await item.update(updateData);
               await item.sheet.render(true);
             } else {
-              spec.data.flags.loaded = false;
+              setProperty(updateData, `flags.starwarsffg.loaded`, false);
               await spec.update(updateData);
               await spec.sheet.render(true);
             }

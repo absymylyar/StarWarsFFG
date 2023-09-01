@@ -13,8 +13,8 @@ export default class ItemBaseFFG extends Item {
 
       await EmbeddedItemHelpers.updateRealObject(this, data);
 
-      if (this.data.flags?.ffgParent?.isCompendium || Object.values(this.apps)[0]._state !== preState) {
-        if (this.data.flags?.ffgParent?.ffgUuid) {
+      if (this.flags?.starwarsffg?.ffgParent?.isCompendium || Object.values(this.apps)[0]._state !== preState) {
+        if (this.flags?.starwarsffg?.ffgParent?.ffgUuid) {
           this.sheet.render(false);
         }
       } else {

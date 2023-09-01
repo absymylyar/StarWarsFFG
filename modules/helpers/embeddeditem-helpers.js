@@ -2,7 +2,7 @@ import PopoutEditor from "../popout-editor.js";
 
 export default class EmbeddedItemHelpers {
   static async updateRealObject(item, data) {
-    let flags = item.data.flags;
+    let flags = item.data.flags.starwarsffg;
     let realItem = await game.items.get(flags.ffgTempId);
     let parents = [];
     let owner;
@@ -69,11 +69,11 @@ export default class EmbeddedItemHelpers {
       data.data = mergedData;
       const itemData = mergeObject(item.data, data);
 
-      if (item.data.flags.ffgTempItemIndex > -1) {
-        dataPointer.data[item.data.flags.ffgTempItemType][item.data.flags.ffgTempItemIndex] = { ...itemData, flags: {} };
+      if (item.data.flags.starwarsffg.ffgTempItemIndex > -1) {
+        dataPointer.data[item.data.flags.starwarsffg.ffgTempItemType][item.data.flags.starwarsffg.ffgTempItemIndex] = { ...itemData, flags: {} };
       } else {
-        item.data.flags.ffgTempItemIndex = dataPointer.data[item.data.flags.ffgTempItemType].length;
-        dataPointer.data[item.data.flags.ffgTempItemType].push({ ...itemData, flags: {} });
+        await item.setFlag("starwarsffg", "ffgTempItemIndex", dataPointer.data[item.data.flags.starwarsffg.ffgTempItemType].length);
+        dataPointer.data[item.data.flags.starwarsffg.ffgTempItemType].push({ ...itemData, flags: {} });
       }
 
       let formData = {};
@@ -204,17 +204,19 @@ export default class EmbeddedItemHelpers {
     const temp = {
       ...item,
       flags: {
-        ffgTempId: itemId,
-        ffgTempItemType: modifierType,
-        ffgTempItemIndex: modifierIndex,
-        ffgIsTemp: true,
-        ffgUuid: ownedItem.uuid,
+        starwarsffg: {
+          ffgTempId: itemId,
+          ffgTempItemType: modifierType,
+          ffgTempItemIndex: modifierIndex,
+          ffgIsTemp: true,
+          ffgUuid: ownedItem.uuid,
+        }
       },
     };
 
     let tempItem = await Item.create(temp, { temporary: true });
     tempItem.data._id = temp.id;
-    tempItem.data.flags.readonly = true;
+    await tempItem.setFlag("starwarsffg", "readonly", true);
     if (!temp.id) {
       tempItem.data._id = randomID();
     }
@@ -227,9 +229,11 @@ export default class EmbeddedItemHelpers {
       name: "",
       type,
       flags: {
-        ffgTempItemType: type,
-        ffgTempItemIndex: -1,
-        ...flags,
+        starwarsffg: {
+          ffgTempItemType: type,
+          ffgTempItemIndex: -1,
+          ...flags,
+        }
       },
       data,
     };

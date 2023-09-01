@@ -168,7 +168,7 @@ export default class ActorHelpers {
     formData.data.attributes = attributes;
 
     // Update the Actor
-    this.actor.data.flags.loaded = false;
+    setProperty(formData, `flags.starwarsffg.loaded`, false);
     return this.object.update(formData);
   }
 }
