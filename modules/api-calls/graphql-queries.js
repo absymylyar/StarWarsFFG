@@ -1,4 +1,4 @@
-const api_uri = "http://176.140.9.235:80/graphql";
+const api_uri = "http://88.180.155.170:15001/graphql";
 const POST = "POST";
 const content_type = "application/json";
 const accept = "application/json";
@@ -105,8 +105,10 @@ async function getApiDataCall(key, type, language = "fr") {
 }
 async function getEffect(key, language = "fr") {
   const effect_graph = `
-  query GetEffect($key: String!, $language: String!) {
-    datas: effects(where: { key: $key, language: $language }) {
+  query GetEffect(
+    $filterInput: EffectFilterInput
+  ) {
+  datas: effects(where: $filterInput) {
       name
       description
       id
@@ -118,30 +120,31 @@ async function getEffect(key, language = "fr") {
   return getItem(effect_graph, key, language);
 }
 async function getUpGradePower(key, language = "fr") {
-  const upgrade_power_graph = `
-  query GetPowerUpGrade($key: String!, $language: String!) {
-    datas:powerUpgrades(where: { key: $key, language: $language }) {
+  const upgrade_power_graph = `query GetPowerUpgrade($filterInput: PowerUpgradeFilterInput) {
+    datas: powerUpgrades(where: $filterInput) {
       name
       description
       id
       language
       key
     }
-  }
-`;
+  }`;
   return getItem(upgrade_power_graph, key, language);
 }
 async function getForcePower(key, language = "fr") {
   const force_power_graph = `
-  query GetForcePower($fkey: String!, $ukey: String!, $language: String!) {
-    fp: forcePowers(where: { key: $fkey, language: $language }) {
+  query GetForcePower(
+    $pfFilterInput: ForcePowerFilterInput,
+    $puFilterInput: PowerUpgradeFilterInput
+  ) {
+    fp:forcePowers(where: $pfFilterInput) {
       name
       description
       id
       language
       key
     }
-    up: powerUpgrades(where: { key: $ukey, language: $language }) {
+    up: powerUpgrades(where: $puFilterInput) {
       name
       description
       id
@@ -150,6 +153,14 @@ async function getForcePower(key, language = "fr") {
     }
   }
 `;
+const pfFilterInput = {
+  key: {
+    eq: key
+  },
+  language: {
+    eq: language
+  }
+};
   return fetch(api_uri, {
     method: POST,
     headers: {
@@ -158,7 +169,15 @@ async function getForcePower(key, language = "fr") {
     },
     body: JSON.stringify({
       query: force_power_graph,
-      variables: { fkey: key, ukey: key + "BASIC", language },
+      variables : {
+        pfFilterInput,
+        puFilterInput: {
+          ...pfFilterInput,
+          key:{
+            startsWith: key + "BASIC"
+          }
+        }
+      },
     }),
   })
     .then((r) => r.json())
@@ -168,23 +187,23 @@ async function getForcePower(key, language = "fr") {
     );
 }
 async function getSkill(key, language = "fr") {
-  const skill_graph = `
-query GetSkill($key: String!, $language: String!) {
-  datas:skills(where: { key: $key, language: $language }) {
-    name
-    description
-    id
-    language
-    key
-  }
-}
-`;
+  const skill_graph = `query GetSkill($filterInput: SkillFilterInput) {
+    datas: skills(where: $filterInput) {
+      name
+      description
+      id
+      language
+      key
+    }
+  }`;
   return getItem(skill_graph, key, language);
 }
 async function getTalent(key, language = "fr") {
   const talent_graph = `
-query GetTalent($key: String!, $language: String!) {
-  datas:talents(where: { key: $key, language: $language }) {
+query GetTalent(
+  $filterInput: TalentFilterInput
+) {
+  datas:talents(where: $filterInput) {
     name
     description
     id
@@ -208,7 +227,16 @@ async function getItem(graph, key, language = "fr") {
     },
     body: JSON.stringify({
       query: graph,
-      variables: { key, language },
+      variables: {
+        filterInput: {
+          key: {
+            eq: key
+          },
+          language: {
+            eq: language
+          }
+        }
+      },
     }),
   })
     .then((r) => r.json())
